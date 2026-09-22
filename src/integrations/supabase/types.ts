@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      addresses: {
+        Row: {
+          address: string
+          alt_phone: string | null
+          city: string
+          created_at: string
+          full_name: string
+          governorate: string | null
+          id: string
+          is_default: boolean
+          label: string | null
+          phone: string
+          postal_code: string | null
+          user_id: string
+        }
+        Insert: {
+          address: string
+          alt_phone?: string | null
+          city: string
+          created_at?: string
+          full_name: string
+          governorate?: string | null
+          id?: string
+          is_default?: boolean
+          label?: string | null
+          phone: string
+          postal_code?: string | null
+          user_id: string
+        }
+        Update: {
+          address?: string
+          alt_phone?: string | null
+          city?: string
+          created_at?: string
+          full_name?: string
+          governorate?: string | null
+          id?: string
+          is_default?: boolean
+          label?: string | null
+          phone?: string
+          postal_code?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -38,6 +83,84 @@ export type Database = {
           name?: string
           slug?: string
           sort_order?: number
+        }
+        Relationships: []
+      }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          subject?: string | null
+        }
+        Relationships: []
+      }
+      custom_orders: {
+        Row: {
+          budget: string | null
+          created_at: string
+          deadline: string | null
+          description: string
+          design_type: string
+          email: string
+          id: string
+          name: string
+          phone: string
+          preferred_colors: string | null
+          preferred_style: string | null
+          reference_url: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          budget?: string | null
+          created_at?: string
+          deadline?: string | null
+          description: string
+          design_type: string
+          email: string
+          id?: string
+          name: string
+          phone: string
+          preferred_colors?: string | null
+          preferred_style?: string | null
+          reference_url?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          budget?: string | null
+          created_at?: string
+          deadline?: string | null
+          description?: string
+          design_type?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string
+          preferred_colors?: string | null
+          preferred_style?: string | null
+          reference_url?: string | null
+          status?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -136,6 +259,98 @@ export type Database = {
           sort_order?: number
         }
         Relationships: []
+      }
+      portfolio_categories: {
+        Row: {
+          id: string
+          is_active: boolean
+          name: string
+          name_ar: string | null
+          slug: string
+          sort_order: number
+        }
+        Insert: {
+          id?: string
+          is_active?: boolean
+          name: string
+          name_ar?: string | null
+          slug: string
+          sort_order?: number
+        }
+        Update: {
+          id?: string
+          is_active?: boolean
+          name?: string
+          name_ar?: string | null
+          slug?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      portfolio_projects: {
+        Row: {
+          category_id: string | null
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          description_ar: string | null
+          external_url: string | null
+          gallery: Json
+          id: string
+          is_featured: boolean
+          is_published: boolean
+          slug: string
+          sort_order: number
+          summary: string | null
+          summary_ar: string | null
+          title: string
+          title_ar: string | null
+        }
+        Insert: {
+          category_id?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          description_ar?: string | null
+          external_url?: string | null
+          gallery?: Json
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          slug: string
+          sort_order?: number
+          summary?: string | null
+          summary_ar?: string | null
+          title: string
+          title_ar?: string | null
+        }
+        Update: {
+          category_id?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          description_ar?: string | null
+          external_url?: string | null
+          gallery?: Json
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          slug?: string
+          sort_order?: number
+          summary?: string | null
+          summary_ar?: string | null
+          title?: string
+          title_ar?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_projects_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "portfolio_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       products: {
         Row: {
