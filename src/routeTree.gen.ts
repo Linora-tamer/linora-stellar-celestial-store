@@ -10,9 +10,16 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AccountRouteImport } from './routes/account'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CustomOrdersRouteImport } from './routes/custom-orders'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as StoryRouteImport } from './routes/story'
 import { Route as OrderNumberRouteImport } from './routes/order.$number'
 import { Route as ShopIndexRouteImport } from './routes/shop.index'
@@ -21,6 +28,21 @@ import { Route as ShopSlugRouteImport } from './routes/shop.$slug'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CartRoute = CartRouteImport.update({
@@ -33,9 +55,29 @@ const CheckoutRoute = CheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomOrdersRoute = CustomOrdersRouteImport.update({
+  id: '/custom-orders',
+  path: '/custom-orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioRoute = PortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StoryRoute = StoryRouteImport.update({
@@ -61,9 +103,16 @@ const ShopSlugRoute = ShopSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/contact': typeof ContactRoute
+  '/custom-orders': typeof CustomOrdersRoute
   '/faq': typeof FaqRoute
+  '/portfolio': typeof PortfolioRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/story': typeof StoryRoute
   '/order/$number': typeof OrderNumberRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -71,9 +120,16 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/contact': typeof ContactRoute
+  '/custom-orders': typeof CustomOrdersRoute
   '/faq': typeof FaqRoute
+  '/portfolio': typeof PortfolioRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/story': typeof StoryRoute
   '/order/$number': typeof OrderNumberRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -82,9 +138,16 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/contact': typeof ContactRoute
+  '/custom-orders': typeof CustomOrdersRoute
   '/faq': typeof FaqRoute
+  '/portfolio': typeof PortfolioRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/story': typeof StoryRoute
   '/order/$number': typeof OrderNumberRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -94,9 +157,16 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/account'
+    | '/admin'
+    | '/auth'
     | '/cart'
     | '/checkout'
+    | '/contact'
+    | '/custom-orders'
     | '/faq'
+    | '/portfolio'
+    | '/reset-password'
     | '/story'
     | '/order/$number'
     | '/shop/$slug'
@@ -104,9 +174,16 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/account'
+    | '/admin'
+    | '/auth'
     | '/cart'
     | '/checkout'
+    | '/contact'
+    | '/custom-orders'
     | '/faq'
+    | '/portfolio'
+    | '/reset-password'
     | '/story'
     | '/order/$number'
     | '/shop/$slug'
@@ -114,9 +191,16 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/account'
+    | '/admin'
+    | '/auth'
     | '/cart'
     | '/checkout'
+    | '/contact'
+    | '/custom-orders'
     | '/faq'
+    | '/portfolio'
+    | '/reset-password'
     | '/story'
     | '/order/$number'
     | '/shop/$slug'
@@ -125,9 +209,16 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
+  AdminRoute: typeof AdminRoute
+  AuthRoute: typeof AuthRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
+  ContactRoute: typeof ContactRoute
+  CustomOrdersRoute: typeof CustomOrdersRoute
   FaqRoute: typeof FaqRoute
+  PortfolioRoute: typeof PortfolioRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   StoryRoute: typeof StoryRoute
   OrderNumberRoute: typeof OrderNumberRoute
   ShopSlugRoute: typeof ShopSlugRoute
@@ -141,6 +232,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cart': {
@@ -157,11 +269,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/custom-orders': {
+      id: '/custom-orders'
+      path: '/custom-orders'
+      fullPath: '/custom-orders'
+      preLoaderRoute: typeof CustomOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/faq': {
       id: '/faq'
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio': {
+      id: '/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/story': {
@@ -197,9 +337,16 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
+  AdminRoute: AdminRoute,
+  AuthRoute: AuthRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
+  ContactRoute: ContactRoute,
+  CustomOrdersRoute: CustomOrdersRoute,
   FaqRoute: FaqRoute,
+  PortfolioRoute: PortfolioRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   StoryRoute: StoryRoute,
   OrderNumberRoute: OrderNumberRoute,
   ShopSlugRoute: ShopSlugRoute,
