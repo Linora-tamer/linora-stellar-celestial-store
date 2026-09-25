@@ -22,7 +22,7 @@ export const Route = createFileRoute("/custom-orders")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: CustomOrders;
+  component: CustomOrders,
 });
 
 const field =
