@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ProductCard } from "@/components/site/ProductCard";
 import { categoriesQuery, productsQuery } from "@/lib/store";
 
-type ShopSearch = { category?: string };
+type ShopSearch = { category?: string | undefined };
 
 export const Route = createFileRoute("/shop/")({
   validateSearch: (search: Record<string, unknown>): ShopSearch => ({
