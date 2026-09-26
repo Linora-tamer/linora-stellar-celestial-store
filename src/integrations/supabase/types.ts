@@ -63,24 +63,30 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          description_ar: string | null
           id: string
           name: string
+          name_ar: string | null
           slug: string
           sort_order: number
         }
         Insert: {
           created_at?: string
           description?: string | null
+          description_ar?: string | null
           id?: string
           name: string
+          name_ar?: string | null
           slug: string
           sort_order?: number
         }
         Update: {
           created_at?: string
           description?: string | null
+          description_ar?: string | null
           id?: string
           name?: string
+          name_ar?: string | null
           slug?: string
           sort_order?: number
         }
@@ -359,16 +365,19 @@ export type Database = {
           currency: string
           customizable: boolean
           description: string | null
+          description_ar: string | null
           details: Json
           id: string
           image_url: string | null
           is_active: boolean
           is_featured: boolean
           name: string
+          name_ar: string | null
           price: number
           slug: string
           sort_order: number
           tagline: string | null
+          tagline_ar: string | null
         }
         Insert: {
           category_id?: string | null
@@ -376,16 +385,19 @@ export type Database = {
           currency?: string
           customizable?: boolean
           description?: string | null
+          description_ar?: string | null
           details?: Json
           id?: string
           image_url?: string | null
           is_active?: boolean
           is_featured?: boolean
           name: string
+          name_ar?: string | null
           price?: number
           slug: string
           sort_order?: number
           tagline?: string | null
+          tagline_ar?: string | null
         }
         Update: {
           category_id?: string | null
@@ -393,16 +405,19 @@ export type Database = {
           currency?: string
           customizable?: boolean
           description?: string | null
+          description_ar?: string | null
           details?: Json
           id?: string
           image_url?: string | null
           is_active?: boolean
           is_featured?: boolean
           name?: string
+          name_ar?: string | null
           price?: number
           slug?: string
           sort_order?: number
           tagline?: string | null
+          tagline_ar?: string | null
         }
         Relationships: [
           {

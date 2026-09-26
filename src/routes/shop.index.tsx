@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { ProductCard } from "@/components/site/ProductCard";
 import { categoriesQuery, productsQuery } from "@/lib/store";
+import { useI18n } from "@/lib/i18n";
 
 type ShopSearch = { category?: string | undefined };
 
@@ -29,6 +30,7 @@ function Shop() {
   const { category } = Route.useSearch();
   const { data: products = [], isLoading } = useQuery(productsQuery);
   const { data: categories = [] } = useQuery(categoriesQuery);
+  const { t, pick } = useI18n();
 
   const active = categories.find((c) => c.slug === category);
   const list = products
@@ -37,10 +39,10 @@ function Shop() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8">
-      <p className="text-xs uppercase tracking-[0.3em] text-gold">The collection</p>
-      <h1 className="mt-2 font-display text-5xl">{active ? active.name : "Shop everything"}</h1>
+      <p className="text-xs uppercase tracking-[0.3em] text-gold">{t("shop.eyebrow")}</p>
+      <h1 className="mt-2 font-display text-5xl">{active ? pick(active, "name") : t("shop.title")}</h1>
       <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-        {active?.description ?? "Eighteen celestial pieces — printables, paper goods, branding services and merch you can personalise."}
+        {active ? pick(active, "description") : t("shop.lead")}
       </p>
 
       <div className="mt-8 flex flex-wrap gap-2">
@@ -51,7 +53,7 @@ function Shop() {
             !category ? "border-gold bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:text-foreground"
           }`}
         >
-          All
+          {t("shop.all")}
         </Link>
         {categories.map((c) => (
           <Link
@@ -64,13 +66,13 @@ function Shop() {
                 : "border-border text-muted-foreground hover:text-foreground"
             }`}
           >
-            {c.name}
+            {pick(c, "name")}
           </Link>
         ))}
       </div>
 
       {isLoading ? (
-        <p className="mt-12 text-sm text-muted-foreground">Loading the catalog…</p>
+        <p className="mt-12 text-sm text-muted-foreground">{t("shop.loading")}</p>
       ) : (
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((p) => (
