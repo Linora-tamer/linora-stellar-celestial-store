@@ -83,5 +83,7 @@ export function useCart() {
   return ctx;
 }
 
-export const formatPrice = (value: number) =>
-  `${new Intl.NumberFormat("en-EG", { maximumFractionDigits: 0 }).format(value)} EGP`;
+export const formatPrice = (value: number, lang: "en" | "ar" = "en") =>
+  lang === "ar"
+    ? `${new Intl.NumberFormat("ar-EG", { maximumFractionDigits: 0 }).format(value)} ج.م`
+    : `${new Intl.NumberFormat("en-EG", { maximumFractionDigits: 0 }).format(value)} EGP`;
