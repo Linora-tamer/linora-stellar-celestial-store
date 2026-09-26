@@ -10,7 +10,10 @@ export const Route = createFileRoute("/reset-password")({
       { title: "Set a new password — Linora Stellar" },
       { name: "description", content: "Choose a new password for your Linora Stellar account." },
       { property: "og:title", content: "Set a new password — Linora Stellar" },
-      { property: "og:description", content: "Choose a new password for your Linora Stellar account." },
+      {
+        property: "og:description",
+        content: "Choose a new password for your Linora Stellar account.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -47,7 +50,10 @@ function ResetPassword() {
         <form onSubmit={submit} className="card-star space-y-4 rounded-2xl p-7">
           <h1 className="font-display text-2xl">Set a new password</h1>
           <div>
-            <label className="text-xs uppercase tracking-[0.16em] text-muted-foreground" htmlFor="password">
+            <label
+              className="text-xs uppercase tracking-[0.16em] text-muted-foreground"
+              htmlFor="password"
+            >
               New password
             </label>
             <input
@@ -61,7 +67,10 @@ function ResetPassword() {
             />
           </div>
           <div>
-            <label className="text-xs uppercase tracking-[0.16em] text-muted-foreground" htmlFor="confirm">
+            <label
+              className="text-xs uppercase tracking-[0.16em] text-muted-foreground"
+              htmlFor="confirm"
+            >
               Confirm password
             </label>
             <input

@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
 import { en, type Dict } from "@/locales/en";
 import { ar } from "@/locales/ar";
@@ -47,7 +55,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       pick: (row, field) => {
         if (!row) return "";
         const localized = lang === "ar" ? row[`${field}_ar`] : undefined;
-        const v = (typeof localized === "string" && localized.trim() ? localized : row[field]) ?? "";
+        const v =
+          (typeof localized === "string" && localized.trim() ? localized : row[field]) ?? "";
         return String(v);
       },
     }),

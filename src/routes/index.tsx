@@ -4,6 +4,7 @@ import { ArrowRight, Palette, Sparkles, Truck } from "lucide-react";
 
 import hero from "@/assets/hero-stellar.jpg";
 import { ProductCard } from "@/components/site/ProductCard";
+import { NewsletterSignup } from "@/components/site/NewsletterSignup";
 import { Star } from "@/components/site/Star";
 import { categoriesQuery, productsQuery } from "@/lib/store";
 import { useI18n } from "@/lib/i18n";
@@ -96,7 +97,10 @@ function Home() {
             <p className="text-xs uppercase tracking-[0.3em] text-gold">{t("home.featured")}</p>
             <h2 className="mt-2 font-display text-4xl">{t("home.bestsellers")}</h2>
           </div>
-          <Link to="/shop" className="text-xs uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground">
+          <Link
+            to="/shop"
+            className="text-xs uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground"
+          >
             {t("home.viewAll")}
           </Link>
         </div>
@@ -125,13 +129,16 @@ function Home() {
         </div>
       </section>
 
+      {/* Celestial Circle Newsletter Banner */}
+      <section className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
+        <NewsletterSignup variant="banner" />
+      </section>
+
       <section className="starfield sky border-y border-border/60">
         <div className="relative mx-auto max-w-3xl px-4 py-20 text-center lg:px-8">
           <Star className="mx-auto h-6 w-6 text-gold" />
           <h2 className="mt-6 font-display text-4xl">{t("home.cta.t")}</h2>
-          <p className="mt-4 text-muted-foreground">
-            {t("home.cta.d")}
-          </p>
+          <p className="mt-4 text-muted-foreground">{t("home.cta.d")}</p>
           <Link
             to="/custom-orders"
             className="mt-8 inline-flex rounded-full bg-primary px-7 py-3 text-sm uppercase tracking-[0.16em] text-primary-foreground"

@@ -3,6 +3,7 @@
 ## What the audit found
 
 **Already working (keep, do not rebuild)**
+
 - Celestial navy-and-gold look, star mark, starfield, Cormorant + Jost type
 - Pages: Home, Shop, Product page with personalisation, Cart, Checkout, Order confirmation, Our Story, FAQ
 - Backend: products, categories, payment methods, site settings, orders, customer profiles, owner role (your email becomes owner automatically), email + Google/Apple/Microsoft sign-in switched on
@@ -10,6 +11,7 @@
 - Cart saved in the browser; five time-of-day looks (Dawn/Morning/Day/Dusk/Night) with an Auto switch
 
 **Broken or missing right now**
+
 - The menu links to Portfolio, Custom Orders and Contact, but those pages do not exist yet — the site errors on those links
 - No sign-in / sign-up / account pages, no owner dashboard
 - Time of day jumps between five fixed looks instead of flowing continuously
@@ -24,18 +26,21 @@
 The full brief is roughly ten separate products' worth of work. Building it in one pass would break the parts that already work. I will ship it in stages, each one testable in the preview, in this order:
 
 ## Stage 1 — Stop the errors, finish the shopfront
+
 - Portfolio, Custom Orders and Contact pages (real content where you have it, admin-managed empty state where you don't)
 - Sign in / sign up / forgot password / reset password, with Google, Apple, Microsoft and email
 - Customer account: profile, saved addresses, order history, order detail
 - Custom order requests saved to the database instead of disappearing
 
 ## Stage 2 — Bilingual Arabic + English
+
 - Arabic and English across every page, with a "العربية | English" switcher that remembers your visitors' choice
 - True right-to-left layout in Arabic (navigation, forms, cart, checkout, dashboard), not just translated words
 - Arabic and English titles/descriptions on products, categories, services and collections, entered by you
 - Language switching never resets cart, sign-in, the page you're on, or the sky
 
 ## Stage 3 — One living Linora universe (Time Reality)
+
 - Replaces the five fixed looks with one continuously shifting environment driven by each visitor's own clock
 - Nine phases: Dawn, Morning, Midday, Golden Hour, Dusk, Twilight, Night, Pre-Midnight, Midnight — blended smoothly, never snapping
 - Sky, light, clouds, shadows, stars, constellations, moon and gold highlights all drift with the hour, updating while the visitor stays on the page
@@ -43,6 +48,7 @@ The full brief is roughly ten separate products' worth of work. Building it in o
 - Lighter on phones, calm for visitors who prefer reduced motion, and never over a button, price or form
 
 ## Stage 4 — Owner dashboard
+
 - Products, categories and subcategories, collections, services, orders, customers, custom orders, portfolio, reviews, settings
 - Add, edit, hide, reorder, upload images, set prices, stock, sizes, colours and featured status — all without me touching code
 - New categories, services and collections appear automatically in the shop, menus, filters and homepage
@@ -50,6 +56,7 @@ The full brief is roughly ten separate products' worth of work. Building it in o
 - A Time Reality panel to tune phase times, star density, moon, clouds and motion
 
 ## Stage 5 — Commerce depth
+
 - Wishlist, recently viewed, related products, search, filters, sorting, pagination
 - Shipping fees by Egyptian governorate, subtotal + shipping + total at checkout
 - Order statuses (Pending → Confirmed → Processing → Shipped → Delivered → Cancelled), customer cancellation while eligible
@@ -57,6 +64,7 @@ The full brief is roughly ten separate products' worth of work. Building it in o
 - Reviews limited to real buyers, moderated by you
 
 ## Stage 6 — Polish
+
 Search-engine text in both languages, order and custom-order email notifications, simple sales and product analytics, accessibility pass, image and speed optimisation, clear Arabic and English error messages, and a full test run across phone, tablet and desktop.
 
 ## Technical notes

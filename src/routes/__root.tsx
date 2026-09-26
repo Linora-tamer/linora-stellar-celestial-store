@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteLayout } from "@/components/site/Layout";
 import { CartProvider } from "@/lib/cart";
+import { WishlistProvider } from "@/lib/wishlist";
 import { ThemeProvider } from "@/lib/theme";
 import { I18nProvider } from "@/lib/i18n";
 import { Toaster } from "@/components/ui/sonner";
@@ -134,15 +135,17 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
-      <ThemeProvider>
-        <CartProvider>
-          <SiteLayout>
-            {/* Required: nested routes render here. */}
-            <Outlet />
-          </SiteLayout>
-          <Toaster />
-        </CartProvider>
-      </ThemeProvider>
+        <ThemeProvider>
+          <WishlistProvider>
+            <CartProvider>
+              <SiteLayout>
+                {/* Required: nested routes render here. */}
+                <Outlet />
+              </SiteLayout>
+              <Toaster />
+            </CartProvider>
+          </WishlistProvider>
+        </ThemeProvider>
       </I18nProvider>
     </QueryClientProvider>
   );

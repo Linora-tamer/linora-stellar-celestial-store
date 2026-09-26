@@ -13,10 +13,14 @@ export const Route = createFileRoute("/contact")({
       { title: "Contact — Linora Stellar" },
       {
         name: "description",
-        content: "Talk to Linora Stellar on WhatsApp, email or Instagram about orders and design work.",
+        content:
+          "Talk to Linora Stellar on WhatsApp, email or Instagram about orders and design work.",
       },
       { property: "og:title", content: "Contact Linora Stellar" },
-      { property: "og:description", content: "WhatsApp, email and social — reach Nora Tamer directly." },
+      {
+        property: "og:description",
+        content: "WhatsApp, email and social — reach Nora Tamer directly.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -37,10 +41,16 @@ function Contact() {
     const form = new FormData(e.currentTarget);
     setBusy(true);
     const { error } = await supabase.from("contact_messages").insert({
-      name: String(form.get("name") ?? "").trim().slice(0, 100),
-      email: String(form.get("email") ?? "").trim().slice(0, 255),
+      name: String(form.get("name") ?? "")
+        .trim()
+        .slice(0, 100),
+      email: String(form.get("email") ?? "")
+        .trim()
+        .slice(0, 255),
       subject: String(form.get("subject") ?? "").slice(0, 150) || null,
-      message: String(form.get("message") ?? "").trim().slice(0, 2000),
+      message: String(form.get("message") ?? "")
+        .trim()
+        .slice(0, 2000),
     });
     setBusy(false);
     if (error) {
@@ -69,7 +79,11 @@ function Contact() {
       <section className="mx-auto grid max-w-7xl gap-10 px-4 py-14 lg:grid-cols-[1fr_1.2fr] lg:px-8">
         <div className="space-y-4">
           {[
-            { icon: MessageCircle, label: `WhatsApp ${CONTACT.whatsapp}`, href: CONTACT.whatsappLink },
+            {
+              icon: MessageCircle,
+              label: `WhatsApp ${CONTACT.whatsapp}`,
+              href: CONTACT.whatsappLink,
+            },
             { icon: Mail, label: CONTACT.email, href: `mailto:${CONTACT.email}` },
             { icon: Instagram, label: "@linora.stellar", href: CONTACT.instagram },
             { icon: Linkedin, label: "Nora Tamer on LinkedIn", href: CONTACT.linkedin },
@@ -105,7 +119,14 @@ function Contact() {
                 <label className={labelCls} htmlFor="email">
                   Email
                 </label>
-                <input id="email" name="email" type="email" required maxLength={255} className={field} />
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  maxLength={255}
+                  className={field}
+                />
               </div>
             </div>
             <div>
@@ -118,7 +139,14 @@ function Contact() {
               <label className={labelCls} htmlFor="message">
                 Message
               </label>
-              <textarea id="message" name="message" required rows={6} maxLength={2000} className={field} />
+              <textarea
+                id="message"
+                name="message"
+                required
+                rows={6}
+                maxLength={2000}
+                className={field}
+              />
             </div>
             <button
               type="submit"

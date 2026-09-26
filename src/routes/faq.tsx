@@ -18,7 +18,10 @@ export const Route = createFileRoute("/faq")({
           "Answers about delivery, personalisation, payment methods, digital files and custom design work at Linora Stellar.",
       },
       { property: "og:title", content: "FAQ — Linora Stellar" },
-      { property: "og:description", content: "Delivery, payment, personalisation and custom work, answered." },
+      {
+        property: "og:description",
+        content: "Delivery, payment, personalisation and custom work, answered.",
+      },
     ],
   }),
   component: FaqPage,

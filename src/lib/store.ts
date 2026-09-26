@@ -4,8 +4,11 @@ export type Product = {
   id: string;
   slug: string;
   name: string;
+  name_ar?: string | null;
   tagline: string | null;
+  tagline_ar?: string | null;
   description: string | null;
+  description_ar?: string | null;
   price: number;
   image_url: string | null;
   category_id: string | null;
@@ -20,7 +23,9 @@ export type Category = {
   id: string;
   slug: string;
   name: string;
+  name_ar?: string | null;
   description: string | null;
+  description_ar?: string | null;
   sort_order: number;
 };
 
