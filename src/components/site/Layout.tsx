@@ -50,7 +50,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
               <Link
                 key={item.to}
                 to={item.to}
-                className="text-xs uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
+                className="whitespace-nowrap text-xs uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
                 activeProps={{ className: "text-foreground" }}
               >
                 {t(item.label)}
@@ -86,7 +86,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
             ) : (
               <Link
                 to="/auth"
-                className="rounded-full border border-gold px-3 py-1.5 text-xs uppercase tracking-[0.16em] text-gold transition-colors hover:bg-primary hover:text-primary-foreground"
+                className="whitespace-nowrap rounded-full border border-gold px-3 py-1.5 text-xs uppercase tracking-[0.16em] text-gold transition-colors hover:bg-primary hover:text-primary-foreground"
               >
                 {t("nav.signin")}
               </Link>
