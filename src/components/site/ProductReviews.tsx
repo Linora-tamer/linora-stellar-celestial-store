@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star, CheckCircle, MessageSquarePlus, User, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import {
   ProductReview,
+  getInitialReviewsForProduct,
   getReviewsForProduct,
   addReview,
   calculateAverageRating,
@@ -18,7 +19,13 @@ export function ProductReviews({ productSlug, productName }: ProductReviewsProps
   const { t, lang } = useI18n();
   const isAr = lang === "ar";
 
-  const [reviews, setReviews] = useState<ProductReview[]>(() => getReviewsForProduct(productSlug));
+  const [reviews, setReviews] = useState<ProductReview[]>(() =>
+    getInitialReviewsForProduct(productSlug),
+  );
+
+  useEffect(() => {
+    setReviews(getReviewsForProduct(productSlug));
+  }, [productSlug]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState<number | null>(null);

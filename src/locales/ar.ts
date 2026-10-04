@@ -1,6 +1,8 @@
 import type { Dict } from "./en";
 
 export const ar: Dict = {
+  "nav.home": "الرئيسية",
+  "nav.about": "عن الاستوديو",
   "nav.shop": "المتجر",
   "nav.story": "قصتنا",
   "nav.portfolio": "الأعمال",

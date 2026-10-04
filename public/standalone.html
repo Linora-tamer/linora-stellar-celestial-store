@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="midnight">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linora Stellar — Where Creativity Meets the Stars</title>
+  <meta name="description" content="Linora Stellar: Celestial printables, bespoke branding, stationery, and personalized merch auto-adapting to your local celestial time." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ==========================================================================
+       1. CSS VARIABLES & DYNAMIC TIME-OF-DAY THEME ENGINE
+       ========================================================================== */
+    :root {
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Jost', system-ui, -apple-system, sans-serif;
+      --transition-smooth: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-fast: all 0.25s ease-out;
+    }
+
+    /* 1. Midnight Theme (10:00 PM - 4:00 AM) [BASE PRIMARY THEME] */
+    html[data-theme="midnight"] {
+      --bg: #090E1A;
+      --bg-gradient: radial-gradient(ellipse 90% 60% at 50% -10%, #152542 0%, #090E1A 75%);
+      --surface: rgba(14, 23, 42, 0.75);
+      --surface-card: rgba(19, 31, 56, 0.65);
+      --surface-hover: rgba(28, 44, 78, 0.85);
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --gold: #E3C280;
+      --gold-dark: #C49E54;
+      --gold-glow: rgba(227, 194, 128, 0.4);
+      --border: rgba(227, 194, 128, 0.22);
+      --border-card: rgba(227, 194, 128, 0.15);
+      --nebula: radial-gradient(circle 500px at 80% 20%, rgba(139, 92, 246, 0.14) 0%, transparent 70%);
+      --star-color: 255, 255, 255;
+      --particle-color: 227, 194, 128;
+      --theme-indicator: #E3C280;
+    }
+
+    /* 2. Dawn Theme (4:00 AM - 8:00 AM) */
+    html[data-theme="dawn"] {
+      --bg: #EBE5F2;
+      --bg-gradient: linear-gradient(135deg, #EBE5F2 0%, #F5EAEC 60%, #E9DEEB 100%);
+      --surface: rgba(255, 255, 255, 0.75);
+      --surface-card: rgba(255, 255, 255, 0.85);
+      --surface-hover: rgba(255, 255, 255, 0.95);
+      --text: #1A233A;
+      --text-muted: #5E6982;
+      --gold: #C08C50;
+      --gold-dark: #9F6E36;
+      --gold-glow: rgba(192, 140, 80, 0.3);
+      --border: rgba(192, 140, 80, 0.35);
+      --border-card: rgba(192, 140, 80, 0.2);
+      --nebula: radial-gradient(circle 600px at 70% 30%, rgba(244, 194, 194, 0.25) 0%, transparent 70%);
+      --star-color: 160, 140, 190;
+      --particle-color: 192, 140, 80;
+      --theme-indicator: #D18F9A;
+    }
+
+    /* 3. Daylight Theme (8:00 AM - 5:00 PM) */
+    html[data-theme="daylight"] {
+      --bg: #FAF6F0;
+      --bg-gradient: linear-gradient(180deg, #EBF3F9 0%, #FAF6F0 60%, #F5EFE6 100%);
+      --surface: rgba(255, 255, 255, 0.82);
+      --surface-card: rgba(255, 255, 255, 0.92);
+      --surface-hover: #FFFFFF;
+      --text: #141D30;
+      --text-muted: #4B5870;
+      --gold: #B88636;
+      --gold-dark: #946722;
+      --gold-glow: rgba(184, 134, 54, 0.28);
+      --border: rgba(184, 134, 54, 0.3);
+      --border-card: rgba(184, 134, 54, 0.18);
+      --nebula: radial-gradient(circle 600px at 85% 15%, rgba(186, 215, 242, 0.22) 0%, transparent 65%);
+      --star-color: 140, 160, 200;
+      --particle-color: 184, 134, 54;
+      --theme-indicator: #3B82F6;
+    }
+
+    /* 4. Sunset Theme (5:00 PM - 10:00 PM) */
+    html[data-theme="sunset"] {
+      --bg: #2A1A30;
+      --bg-gradient: linear-gradient(135deg, #2A1A30 0%, #44223A 50%, #5C2A39 100%);
+      --surface: rgba(56, 32, 64, 0.75);
+      --surface-card: rgba(70, 38, 72, 0.65);
+      --surface-hover: rgba(92, 50, 94, 0.85);
+      --text: #FFF7ED;
+      --text-muted: #D1B5CD;
+      --gold: #F5BC66;
+      --gold-dark: #D49B45;
+      --gold-glow: rgba(245, 188, 102, 0.4);
+      --border: rgba(245, 188, 102, 0.3);
+      --border-card: rgba(245, 188, 102, 0.18);
+      --nebula: radial-gradient(circle 550px at 75% 25%, rgba(249, 115, 22, 0.18) 0%, transparent 70%);
+      --star-color: 255, 235, 200;
+      --particle-color: 245, 188, 102;
+      --theme-indicator: #F5BC66;
+    }
+
+    /* Universal Transition for Theme Changes */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: var(--bg-gradient);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+      transition: background-color 1.5s ease-in-out, color 1.5s ease-in-out;
+    }
+
+    /* Background Nebula Layer */
+    .nebula-layer {
+      position: fixed;
+      inset: 0;
+      background-image: var(--nebula);
+      pointer-events: none;
+      z-index: 1;
+      transition: background-image 1.5s ease-in-out;
+    }
+
+    /* Interactive Canvas Background */
+    #starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Main Container wrapper */
+    .app-wrap {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ==========================================================================
+       2. TIME CONTROL & LIVE PREVIEW BAR
+       ========================================================================== */
+    .preview-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.82rem;
+      transition: var(--transition-smooth);
+    }
+
+    .preview-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .live-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 10px var(--gold);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.3); }
+    }
+
+    .preview-time {
+      font-family: monospace;
+      font-weight: 600;
+      color: var(--gold);
+      background: rgba(0, 0, 0, 0.15);
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-card);
+    }
+
+    .preview-greeting {
+      font-style: italic;
+      color: var(--text-muted);
+    }
+
+    .theme-buttons {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .theme-btn {
+      background: transparent;
+      border: 1px solid var(--border-card);
+      color: var(--text);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: var(--transition-fast);
+    }
+
+    .theme-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    .theme-btn.active {
+      background: var(--gold);
+      color: #090E1A;
+      font-weight: 700;
+      border-color: var(--gold);
+      box-shadow: 0 0 14px var(--gold-glow);
+    }
+
+    /* ==========================================================================
+       3. SITE HEADER & NAVIGATION
+       ========================================================================== */
+    .site-header {
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-card);
+      padding: 1.1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      transition: var(--transition-smooth);
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .star-logo-icon {
+      width: 24px;
+      height: 24px;
+      fill: var(--gold);
+      filter: drop-shadow(0 0 6px var(--gold-glow));
+    }
+
+    .brand-name {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.8rem;
+      list-style: none;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-weight: 500;
+      transition: var(--transition-fast);
+      position: relative;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--gold);
+    }
+
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--gold);
+      border-radius: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .icon-btn {
+      background: var(--surface-card);
+      border: 1px solid var(--border-card);
+      color: var(--text);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: var(--transition-fast);
+    }
+
+    .icon-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      transform: scale(1.05);
+    }
+
+    .badge-count {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: var(--gold);
+      color: #090E1A;
+      font-size: 0.68rem;
+      font-weight: 700;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ==========================================================================
+       4. HERO SECTION
+       ========================================================================== */
+    .hero-section {
+      padding: 5.5rem 2rem 4rem;
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: center;
+      gap: 3.5rem;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      padding: 0.4rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px var(--gold-glow);
+    }
+
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: 4.2rem;
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: 0.04em;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero-title span {
+      display: block;
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .hero-greeting-box {
+      border-left: 3px solid var(--gold);
+      padding-left: 1.1rem;
+      margin-bottom: 1.6rem;
+      font-size: 0.95rem;
+      color: var(--gold);
+      font-weight: 500;
+    }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 540px;
+      line-height: 1.7;
+      margin-bottom: 2.2rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: #090E1A;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      padding: 0.95rem 2.2rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      box-shadow: 0 4px 24px var(--gold-glow);
+      transition: var(--transition-fast);
+    }
+
+    .btn-gold:hover {
+      background: var(--gold-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--gold-glow);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      padding: 0.95rem 2rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition-fast);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: var(--surface-card);
+      transform: translateY(-2px);
+    }
+
+    /* Hero Showcase with Halo */
+    .hero-showcase {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .halo-effect {
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--gold-glow) 0%, rgba(227, 194, 128, 0.05) 60%, transparent 80%);
+      filter: blur(40px);
+      animation: pulse-halo 6s infinite ease-in-out;
+      pointer-events: none;
+    }
+
+    @keyframes pulse-halo {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 0.5; }
+    }
+
+    .showcase-card {
+      position: relative;
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.8rem;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+      transition: var(--transition-smooth);
+    }
+
+    .showcase-img {
+      width: 100%;
+      height: 260px;
+      border-radius: 16px;
+      object-fit: cover;
+      border: 1px solid var(--border-card);
+      display: block;
+      margin-bottom: 1.2rem;
+    }
+
+    .showcase-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      margin-bottom: 0.4rem;
+      font-weight: 600;
+    }
+
+    .showcase-name {
+      font-family: var(--font-serif);
+      font-size: 1.45rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .showcase-price {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    /* ==========================================================================
+       5. CATEGORIES GRID
+       ========================================================================== */
+    .section-wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+      width: 100%;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-tag {
+      font-size: 0.78rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 2.8rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .category-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-card);
+      border-radius: 20px;
+      padding: 2.2rem 1.8rem;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition-fast);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .category-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .category-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--gold);
+      background: var(--surface-hover);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .category-card:hover::before {
+      opacity: 1;
+    }
+
+    .cat-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: rgba(227, 194, 128, 0.12);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      margin-bottom: 1.4rem;
+      font-size: 1.3rem;
+    }
+
+    .cat-title {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .cat-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 1.4rem;
+    }
+
+    .cat-link {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-weight: 600;
+      color: var(--gold);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* ==========================================================================
+       6. FEATURED PRODUCTS GRID
+       ========================================================================== */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .product-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-card);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: var(--transition-fast);
+    }
+
+    .product-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--gold);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
+    }
+
+    .product-img-wrap {
+      position: relative;
+      height: 240px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .product-card:hover .product-img {
+      transform: scale(1.06);
+    }
+
+    .product-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(9, 14, 26, 0.85);
+      border: 1px solid var(--border);
+      color: var(--gold);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      backdrop-filter: blur(8px);
+    }
+
+    .wishlist-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(9, 14, 26, 0.85);
+      border: 1px solid var(--border-card);
+      color: var(--text);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .wishlist-btn:hover, .wishlist-btn.active {
+      color: #F43F5E;
+      border-color: #F43F5E;
+      transform: scale(1.1);
+    }
+
+    .product-info {
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .product-cat {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      margin-bottom: 0.35rem;
+      font-weight: 600;
+    }
+
+    .product-title {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .product-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.2rem;
+      flex-grow: 1;
+    }
+
+    .product-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-card);
+      padding-top: 1rem;
+    }
+
+    .product-price {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .add-cart-btn {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: var(--transition-fast);
+    }
+
+    .add-cart-btn:hover {
+      background: var(--gold);
+      color: #090E1A;
+      border-color: var(--gold);
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+
+    /* ==========================================================================
+       7. CART DRAWER & NOTIFICATIONS
+       ========================================================================== */
+    .cart-drawer {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: 400px;
+      max-width: 90vw;
+      height: 100vh;
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-left: 1px solid var(--border);
+      z-index: 200;
+      box-shadow: -10px 0 40px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .cart-drawer.open {
+      right: 0;
+    }
+
+    .cart-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 199;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .cart-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .cart-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border-card);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cart-title {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .close-cart {
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .cart-items {
+      padding: 1.5rem;
+      flex-grow: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .cart-empty-msg {
+      text-align: center;
+      color: var(--text-muted);
+      margin-top: 4rem;
+      font-size: 0.95rem;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-card);
+    }
+
+    .cart-item-img {
+      width: 55px;
+      height: 55px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid var(--border-card);
+    }
+
+    .cart-item-info {
+      flex-grow: 1;
+    }
+
+    .cart-item-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+    }
+
+    .cart-item-price {
+      font-size: 0.82rem;
+      color: var(--gold);
+    }
+
+    .cart-item-remove {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .cart-item-remove:hover {
+      color: #F43F5E;
+    }
+
+    .cart-footer {
+      padding: 1.5rem;
+      border-top: 1px solid var(--border-card);
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-total-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .cart-total-price {
+      color: var(--gold);
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .checkout-btn {
+      width: 100%;
+      background: var(--gold);
+      color: #090E1A;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      padding: 0.95rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 20px var(--gold-glow);
+    }
+
+    .checkout-btn:hover {
+      background: var(--gold-dark);
+    }
+
+    /* Toast Notifications */
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--surface);
+      border: 1px solid var(--gold);
+      color: var(--text);
+      padding: 0.75rem 1.6rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      z-index: 300;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      pointer-events: none;
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+    }
+
+    .toast-msg.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* ==========================================================================
+       8. FOOTER
+       ========================================================================== */
+    .site-footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border-card);
+      padding: 4rem 2rem 2rem;
+      margin-top: 4rem;
+      transition: var(--transition-smooth);
+    }
+
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-tagline {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      max-width: 320px;
+      margin-top: 0.8rem;
+      line-height: 1.6;
+    }
+
+    .footer-heading {
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .footer-link {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      transition: var(--transition-fast);
+    }
+
+    .footer-link:hover {
+      color: var(--gold);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border-card);
+      padding-top: 1.5rem;
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+      .hero-section {
+        grid-template-columns: 1fr;
+        padding-top: 3.5rem;
+        text-align: center;
+      }
+      .hero-title {
+        font-size: 3.2rem;
+      }
+      .hero-subtitle {
+        margin: 0 auto 2rem;
+      }
+      .hero-actions {
+        justify-content: center;
+      }
+      .hero-greeting-box {
+        border-left: none;
+        border-top: 2px solid var(--gold);
+        padding-top: 0.8rem;
+        padding-left: 0;
+      }
+      .nav-links {
+        display: none;
+      }
+      .footer-inner {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hero-title {
+        font-size: 2.5rem;
+      }
+      .footer-inner {
+        grid-template-columns: 1fr;
+      }
+      .preview-bar {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Nebula Layer -->
+  <div class="nebula-layer"></div>
+
+  <!-- HTML5 Canvas for Interactive Starfield & Mouse Particle Trails -->
+  <canvas id="starfield"></canvas>
+
+  <div class="app-wrap">
+    <!-- ======================================================================
+         1. TIME CONTROL & LIVE PREVIEW BAR
+         ====================================================================== -->
+    <aside class="preview-bar" aria-label="Celestial Time Controller">
+      <div class="preview-info">
+        <span class="live-pulse"></span>
+        <span>Local Time:</span>
+        <span class="preview-time" id="localClock">12:00:00 AM</span>
+        <span class="preview-greeting" id="timeGreeting">Welcome to Linora Stellar</span>
+      </div>
+
+      <div class="theme-buttons">
+        <span style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted);">
+          Celestial Phase:
+        </span>
+        <button class="theme-btn active" data-theme="midnight" id="btnMidnight">
+          <span>🌙</span> Midnight (Base)
+        </button>
+        <button class="theme-btn" data-theme="dawn" id="btnDawn">
+          <span>🌅</span> Dawn
+        </button>
+        <button class="theme-btn" data-theme="daylight" id="btnDaylight">
+          <span>☀️</span> Daylight
+        </button>
+        <button class="theme-btn" data-theme="sunset" id="btnSunset">
+          <span>🌇</span> Sunset
+        </button>
+        <button class="theme-btn" id="btnAutoMode" title="Sync automatically to local browser time">
+          <span>⚡</span> Auto
+        </button>
+      </div>
+    </aside>
+
+    <!-- ======================================================================
+         2. SITE HEADER & NAVIGATION
+         ====================================================================== -->
+    <header class="site-header">
+      <a href="#" class="brand-logo">
+        <svg class="star-logo-icon" viewBox="0 0 24 24">
+          <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/>
+        </svg>
+        <span class="brand-name">LINORA</span>
+      </a>
+
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#hero" class="nav-link active">Home</a></li>
+          <li><a href="#categories" class="nav-link">Categories</a></li>
+          <li><a href="#products" class="nav-link">Shop</a></li>
+          <li><a href="#portfolio" class="nav-link">Portfolio</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="btnSearch" title="Search catalog" aria-label="Search">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        </button>
+        <button class="icon-btn" id="btnWishlist" title="View Wishlist" aria-label="Wishlist">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+          <span class="badge-count" id="wishlistCount">0</span>
+        </button>
+        <button class="icon-btn" id="btnCart" title="Open shopping bag" aria-label="Shopping Cart">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+          <span class="badge-count" id="cartCount">0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ======================================================================
+         3. HERO SECTION
+         ====================================================================== -->
+    <main>
+      <section class="hero-section" id="hero">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/></svg>
+            <span>Light in the midnight • Egypt</span>
+          </div>
+
+          <h1 class="hero-title">
+            LINORA STELLAR
+            <span>Where creativity meets the stars.</span>
+          </h1>
+
+          <div class="hero-greeting-box" id="heroGreetingBanner">
+            ✦ Midnight Phase Active — Nighttime Celestial Drop
+          </div>
+
+          <p class="hero-subtitle">
+            Curated celestial printables, bespoke branding, tailored stationery, and personalized starry merchandise crafted under the Egyptian skies by Nora Tamer.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#products" class="btn-gold">
+              <span>Explore Collection</span>
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </a>
+            <a href="#categories" class="btn-outline">
+              <span>Order Custom Design</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-showcase">
+          <div class="halo-effect"></div>
+          <div class="showcase-card">
+            <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80" alt="Celestial Planner & Stationery" class="showcase-img" />
+            <span class="showcase-badge">Featured Creation</span>
+            <h3 class="showcase-name">Constellation Digital Life Planner</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.6rem;">
+              <span class="showcase-price">280 EGP</span>
+              <button class="add-cart-btn" onclick="addToCart('Constellation Digital Life Planner', 280, 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=200&q=80')">
+                <span>+ Add</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           4. CATEGORY CARDS GRID
+           ====================================================================== -->
+      <section class="section-wrap" id="categories">
+        <div class="section-header">
+          <span class="section-tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/></svg>
+            Curated Collections
+          </span>
+          <h2 class="section-title">Design Disciplines & Studio Goods</h2>
+        </div>
+
+        <div class="categories-grid">
+          <!-- 1. Branding & Identity -->
+          <div class="category-card">
+            <div>
+              <div class="cat-icon-wrap">✦</div>
+              <h3 class="cat-title">Branding & Identity</h3>
+              <p class="cat-desc">
+                Bespoke logos, astral visual identity suites, typography pairings, color systems, and gold-foiled brand guidelines.
+              </p>
+            </div>
+            <a href="#products" class="cat-link">
+              <span>View Packages</span>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </a>
+          </div>
+
+          <!-- 2. Graphic Design -->
+          <div class="category-card">
+            <div>
+              <div class="cat-icon-wrap">🎨</div>
+              <h3 class="cat-title">Graphic Design</h3>
+              <p class="cat-desc">
+                Wax-seal wedding suites, celestial event printables, custom wall art, and tailored business collateral.
+              </p>
+            </div>
+            <a href="#products" class="cat-link">
+              <span>Explore Designs</span>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </a>
+          </div>
+
+          <!-- 3. Digital Products -->
+          <div class="category-card">
+            <div>
+              <div class="cat-icon-wrap">📱</div>
+              <h3 class="cat-title">Digital Products</h3>
+              <p class="cat-desc">
+                Hyperlinked digital planners for iPad / GoodNotes, financial budget trackers, and editable Canva templates.
+              </p>
+            </div>
+            <a href="#products" class="cat-link">
+              <span>Instant Download</span>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </a>
+          </div>
+
+          <!-- 4. School Products -->
+          <div class="category-card">
+            <div>
+              <div class="cat-icon-wrap">🎒</div>
+              <h3 class="cat-title">School Products</h3>
+              <p class="cat-desc">
+                Personalized waterproof name labels, starry classroom organization packs, notebooks, and student stationery.
+              </p>
+            </div>
+            <a href="#products" class="cat-link">
+              <span>Personalize Now</span>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           5. FEATURED PRODUCTS GRID
+           ====================================================================== -->
+      <section class="section-wrap" id="products">
+        <div class="section-header">
+          <span class="section-tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/></svg>
+            Linora Signature Drop
+          </span>
+          <h2 class="section-title">Featured Celestial Creations</h2>
+        </div>
+
+        <div class="products-grid" id="productsContainer">
+          <!-- Products injected dynamically via JavaScript -->
+        </div>
+      </section>
+    </main>
+
+    <!-- ======================================================================
+         6. CART DRAWER & BACKDROP
+         ====================================================================== -->
+    <div class="cart-backdrop" id="cartBackdrop"></div>
+    <div class="cart-drawer" id="cartDrawer">
+      <div class="cart-header">
+        <h3 class="cart-title">
+          <span>🛍️</span>
+          <span>Your Celestial Bag</span>
+        </h3>
+        <button class="close-cart" id="btnCloseCart" aria-label="Close cart">✕</button>
+      </div>
+
+      <div class="cart-items" id="cartItemsList">
+        <div class="cart-empty-msg">Your bag is as clear as a starry night.</div>
+      </div>
+
+      <div class="cart-footer">
+        <div class="cart-total-row">
+          <span>Subtotal</span>
+          <span class="cart-total-price" id="cartTotalDisplay">0 EGP</span>
+        </div>
+        <button class="checkout-btn" id="btnCheckout">
+          <span>Proceed to One-Page Checkout</span>
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast-msg" id="toastMsg">
+      <span>✦</span> <span id="toastText">Item added to your bag</span>
+    </div>
+
+    <!-- ======================================================================
+         7. SITE FOOTER
+         ====================================================================== -->
+    <footer class="site-footer" id="contact">
+      <div class="footer-inner">
+        <div>
+          <a href="#" class="brand-logo" style="margin-bottom: 0.5rem;">
+            <svg class="star-logo-icon" viewBox="0 0 24 24"><path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/></svg>
+            <span class="brand-name" style="font-size: 1.3rem;">LINORA</span>
+          </a>
+          <p class="footer-tagline">
+            Where creativity meets the stars. Handmade printables, branding identities, and stationery crafted by Nora Tamer in Cairo, Egypt.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Studio Shop</h4>
+          <ul class="footer-links">
+            <li><a href="#products" class="footer-link">Custom Waterproof Labels</a></li>
+            <li><a href="#products" class="footer-link">Digital Planners</a></li>
+            <li><a href="#products" class="footer-link">Stationery & Notebooks</a></li>
+            <li><a href="#products" class="footer-link">Apparel & Merch</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Services</h4>
+          <ul class="footer-links">
+            <li><a href="#categories" class="footer-link">Brand Identity Design</a></li>
+            <li><a href="#categories" class="footer-link">Wedding Invitations</a></li>
+            <li><a href="#categories" class="footer-link">School Customization</a></li>
+            <li><a href="#categories" class="footer-link">Canva Brand Kits</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Connect</h4>
+          <ul class="footer-links">
+            <li><a href="https://instagram.com" target="_blank" class="footer-link">Instagram @linora.stellar</a></li>
+            <li><a href="https://wa.me/201016604294" target="_blank" class="footer-link">WhatsApp Consultation</a></li>
+            <li><a href="mailto:norafayed06@gmail.com" class="footer-link">norafayed06@gmail.com</a></li>
+            <li><a href="#" class="footer-link">Cairo / Maadi, Egypt</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 LINORA STELLAR • All Rights Reserved • Designed by Nora Tamer.</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ==========================================================================
+       8. JAVASCRIPT: STARFIELD CANVAS & TIME ENGINE LOGIC
+       ========================================================================== -->
+  <script>
+    (function () {
+      "use strict";
+
+      /* ========================================================================
+         DATA: FEATURED PRODUCTS
+         ======================================================================== */
+      const PRODUCTS = [
+        {
+          id: "p1",
+          name: "Starlight Waterproof Name Labels (48 Pcs)",
+          category: "School & Kids",
+          price: 140,
+          currency: "EGP",
+          badge: "Bestseller",
+          desc: "Personalized water-resistant glossy vinyl stickers with gold starlight accents for school lunchboxes and bottles.",
+          img: "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&q=80"
+        },
+        {
+          id: "p2",
+          name: "Constellation Digital Life Planner 2026",
+          category: "Digital Products",
+          price: 280,
+          currency: "EGP",
+          badge: "Instant PDF",
+          desc: "12-month hyperlinked daily, weekly, and monthly planner with celestial habits, budgets, and meal routines.",
+          img: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80"
+        },
+        {
+          id: "p3",
+          name: "Celestial Midnight Navy Hoodie",
+          category: "Merch & Apparel",
+          price: 650,
+          currency: "EGP",
+          badge: "Limited Drop",
+          desc: "Heavyweight 100% Egyptian cotton hoodie embroidered with metallic starlight gold constellations on chest.",
+          img: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=600&q=80"
+        },
+        {
+          id: "p4",
+          name: "Bespoke Brand Identity Suite",
+          category: "Branding",
+          price: 3500,
+          currency: "EGP",
+          badge: "Custom Service",
+          desc: "Primary & secondary logos, astral emblem, typography pairing, full color system, and 15 Canva templates.",
+          img: "https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=600&q=80"
+        },
+        {
+          id: "p5",
+          name: "Gold-Foiled Wedding Stationery Set",
+          category: "Graphic Design",
+          price: 850,
+          currency: "EGP",
+          badge: "Luxury Print",
+          desc: "Hand-embossed astronomical invitations, deep navy RSVP cards, wax seals, and translucent vellum wraps.",
+          img: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=600&q=80"
+        },
+        {
+          id: "p6",
+          name: "Matte Navy Thermal Constellation Bottle",
+          category: "Lifestyle Merch",
+          price: 220,
+          currency: "EGP",
+          badge: "Stainless Steel",
+          desc: "Double-walled vacuum insulated 500ml flask keeps beverages cold for 24h or piping hot for 12h.",
+          img: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80"
+        }
+      ];
+
+      /* ========================================================================
+         1. RENDER PRODUCTS
+         ======================================================================== */
+      const container = document.getElementById("productsContainer");
+      if (container) {
+        container.innerHTML = PRODUCTS.map(p => `
+          <article class="product-card" data-id="${p.id}">
+            <div class="product-img-wrap">
+              <img src="${p.img}" alt="${p.name}" class="product-img" loading="lazy" />
+              <span class="product-badge">${p.badge}</span>
+              <button class="wishlist-btn" onclick="toggleWishlist('${p.id}')" aria-label="Save to wishlist" title="Save to wishlist">
+                ♥
+              </button>
+            </div>
+            <div class="product-info">
+              <span class="product-cat">${p.category}</span>
+              <h3 class="product-title">${p.name}</h3>
+              <p class="product-desc">${p.desc}</p>
+              <div class="product-footer">
+                <span class="product-price">${p.price} ${p.currency}</span>
+                <button class="add-cart-btn" onclick="addToCart('${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.img}')">
+                  <span>+ Add to Bag</span>
+                </button>
+              </div>
+            </div>
+          </article>
+        `).join("");
+      }
+
+      /* ========================================================================
+         2. INTERACTIVE STARFIELD CANVAS & MOUSE PARTICLES
+         ======================================================================== */
+      const canvas = document.getElementById("starfield");
+      const ctx = canvas.getContext("2d");
+      let width, height;
+      let stars = [];
+      let mouseParticles = [];
+      let scrollOffset = 0;
+      let mouse = { x: -1000, y: -1000 };
+
+      function resizeCanvas() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        initStars();
+      }
+
+      function initStars() {
+        stars = [];
+        const count = Math.floor((width * height) / 5000);
+        for (let i = 0; i < count; i++) {
+          stars.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            radius: Math.random() * 1.6 + 0.3,
+            depth: Math.random() * 0.8 + 0.2, // for parallax scroll
+            baseAlpha: Math.random() * 0.7 + 0.3,
+            alpha: Math.random() * 0.7 + 0.3,
+            speed: Math.random() * 0.02 + 0.005,
+            isBright: Math.random() > 0.88
+          });
+        }
+      }
+
+      window.addEventListener("resize", resizeCanvas);
+      window.addEventListener("scroll", () => {
+        scrollOffset = window.scrollY || window.pageYOffset;
+      });
+
+      window.addEventListener("mousemove", (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+
+        // Add soft trailing glow particle on mouse movement
+        if (Math.random() > 0.4) {
+          mouseParticles.push({
+            x: e.clientX,
+            y: e.clientY,
+            vx: (Math.random() - 0.5) * 0.8,
+            vy: (Math.random() - 0.5) * 0.8 - 0.4,
+            radius: Math.random() * 2.2 + 1.2,
+            life: 1.0,
+            decay: Math.random() * 0.025 + 0.015
+          });
+        }
+      });
+
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Dynamic theme particle color
+        const theme = document.documentElement.getAttribute("data-theme") || "midnight";
+        let particleRgb = "227, 194, 128"; // default gold
+        if (theme === "dawn") particleRgb = "192, 140, 80";
+        if (theme === "daylight") particleRgb = "184, 134, 54";
+        if (theme === "sunset") particleRgb = "245, 188, 102";
+
+        // Draw Stars with parallax scroll
+        for (let star of stars) {
+          star.alpha += star.speed;
+          const currentAlpha = Math.abs(Math.sin(star.alpha)) * star.baseAlpha;
+          
+          // Parallax calculation
+          let renderY = (star.y - scrollOffset * star.depth * 0.35) % height;
+          if (renderY < 0) renderY += height;
+
+          ctx.fillStyle = `rgba(${particleRgb}, ${currentAlpha})`;
+          ctx.beginPath();
+          ctx.arc(star.x, renderY, star.radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Delicate 4-pointed cross sparkle on brighter stars
+          if (star.isBright && currentAlpha > 0.55) {
+            ctx.strokeStyle = `rgba(${particleRgb}, ${currentAlpha * 0.6})`;
+            ctx.lineWidth = 0.6;
+            ctx.beginPath();
+            ctx.moveTo(star.x - 4, renderY);
+            ctx.lineTo(star.x + 4, renderY);
+            ctx.moveTo(star.x, renderY - 4);
+            ctx.lineTo(star.x, renderY + 4);
+            ctx.stroke();
+          }
+        }
+
+        // Draw Mouse Particles with glowing trail
+        for (let i = mouseParticles.length - 1; i >= 0; i--) {
+          const p = mouseParticles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life -= p.decay;
+
+          if (p.life <= 0) {
+            mouseParticles.splice(i, 1);
+            continue;
+          }
+
+          ctx.fillStyle = `rgba(${particleRgb}, ${p.life * 0.7})`;
+          ctx.shadowColor = `rgba(${particleRgb}, 0.5)`;
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius * p.life, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0; // reset
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      resizeCanvas();
+      animate();
+
+      /* ========================================================================
+         3. DYNAMIC TIMEZONE-BASED THEME ENGINE
+         ======================================================================== */
+      const GREETINGS = {
+        midnight: {
+          period: "Midnight",
+          range: "10:00 PM – 4:00 AM",
+          greeting: "Good Night & Sweet Stargazing — Light in the Midnight",
+          hero: "✦ Midnight Phase Active — Base Primary Celestial Drop"
+        },
+        dawn: {
+          period: "Dawn",
+          range: "4:00 AM – 8:00 AM",
+          greeting: "Good Morning — The First Soft Rose Light of Creation",
+          hero: "✦ Dawn Phase Active — Lavender Sky & Golden Awakenings"
+        },
+        daylight: {
+          period: "Daylight",
+          range: "8:00 AM – 5:00 PM",
+          greeting: "Good Afternoon — Create Brightly Under the Radiant Sun",
+          hero: "✦ Daylight Phase Active — Crisp Ivory & Celestial Organization"
+        },
+        sunset: {
+          period: "Sunset",
+          range: "5:00 PM – 10:00 PM",
+          greeting: "Good Evening — Twilight Magic & Golden Hour Dreams",
+          hero: "✦ Sunset Phase Active — Amber Twilight & Warm Constellations"
+        }
+      };
+
+      let isAutoMode = true;
+
+      function getPeriodForHour(hour) {
+        // Midnight Theme: 10:00 PM (22:00) - 4:00 AM (04:00)
+        if (hour >= 22 || hour < 4) return "midnight";
+        // Dawn Theme: 4:00 AM - 8:00 AM
+        if (hour >= 4 && hour < 8) return "dawn";
+        // Daylight Theme: 8:00 AM - 5:00 PM (17:00)
+        if (hour >= 8 && hour < 17) return "daylight";
+        // Sunset Theme: 5:00 PM (17:00) - 10:00 PM (22:00)
+        return "sunset";
+      }
+
+      function setTheme(themeKey, manual = false) {
+        if (manual) isAutoMode = false;
+        document.documentElement.setAttribute("data-theme", themeKey);
+
+        // Update Theme Buttons UI
+        document.querySelectorAll(".theme-btn").forEach(btn => {
+          if (btn.id === "btnAutoMode") {
+            btn.classList.toggle("active", isAutoMode);
+          } else {
+            btn.classList.toggle("active", btn.getAttribute("data-theme") === themeKey);
+          }
+        });
+
+        // Update Greetings
+        const info = GREETINGS[themeKey];
+        if (info) {
+          const greetingEl = document.getElementById("timeGreeting");
+          const heroBannerEl = document.getElementById("heroGreetingBanner");
+          if (greetingEl) greetingEl.textContent = info.greeting;
+          if (heroBannerEl) heroBannerEl.textContent = info.hero;
+        }
+      }
+
+      function updateClock() {
+        const now = new Date();
+        const clockEl = document.getElementById("localClock");
+        if (clockEl) {
+          clockEl.textContent = now.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+          });
+        }
+
+        if (isAutoMode) {
+          const currentHour = now.getHours();
+          const period = getPeriodForHour(currentHour);
+          if (document.documentElement.getAttribute("data-theme") !== period) {
+            setTheme(period, false);
+          }
+        }
+      }
+
+      // Initial run & Interval
+      updateClock();
+      setInterval(updateClock, 1000);
+
+      // Button Event Listeners
+      document.getElementById("btnMidnight")?.addEventListener("click", () => setTheme("midnight", true));
+      document.getElementById("btnDawn")?.addEventListener("click", () => setTheme("dawn", true));
+      document.getElementById("btnDaylight")?.addEventListener("click", () => setTheme("daylight", true));
+      document.getElementById("btnSunset")?.addEventListener("click", () => setTheme("sunset", true));
+      document.getElementById("btnAutoMode")?.addEventListener("click", () => {
+        isAutoMode = true;
+        const now = new Date();
+        setTheme(getPeriodForHour(now.getHours()), false);
+        showToast("Auto Mode Enabled: Synced with local clock");
+      });
+
+      /* ========================================================================
+         4. CART & WISHLIST LOGIC
+         ======================================================================== */
+      let cart = [];
+      let wishlist = new Set();
+
+      window.addToCart = function (name, price, img) {
+        cart.push({ id: Date.now(), name, price, img });
+        updateCartUI();
+        showToast(`Added "${name}" to your bag ✦`);
+      };
+
+      window.removeFromCart = function (id) {
+        cart = cart.filter(item => item.id !== id);
+        updateCartUI();
+      };
+
+      window.toggleWishlist = function (productId) {
+        const btn = document.querySelector(`[data-id="${productId}"] .wishlist-btn`);
+        if (wishlist.has(productId)) {
+          wishlist.delete(productId);
+          if (btn) btn.classList.remove("active");
+          showToast("Item removed from your wishlist");
+        } else {
+          wishlist.add(productId);
+          if (btn) btn.classList.add("active");
+          showToast("Saved to your celestial wishlist ♥");
+        }
+        const wCount = document.getElementById("wishlistCount");
+        if (wCount) wCount.textContent = wishlist.size;
+      };
+
+      function updateCartUI() {
+        const cartCount = document.getElementById("cartCount");
+        const list = document.getElementById("cartItemsList");
+        const totalDisplay = document.getElementById("cartTotalDisplay");
+
+        if (cartCount) cartCount.textContent = cart.length;
+
+        if (list) {
+          if (cart.length === 0) {
+            list.innerHTML = `<div class="cart-empty-msg">Your bag is as clear as a starry night.</div>`;
+          } else {
+            list.innerHTML = cart.map(item => `
+              <div class="cart-item">
+                <img src="${item.img}" alt="${item.name}" class="cart-item-img" />
+                <div class="cart-item-info">
+                  <div class="cart-item-title">${item.name}</div>
+                  <div class="cart-item-price">${item.price} EGP</div>
+                </div>
+                <button class="cart-item-remove" onclick="removeFromCart(${item.id})">✕</button>
+              </div>
+            `).join("");
+          }
+        }
+
+        const total = cart.reduce((sum, i) => sum + i.price, 0);
+        if (totalDisplay) totalDisplay.textContent = `${total} EGP`;
+      }
+
+      // Drawer Open / Close
+      const cartDrawer = document.getElementById("cartDrawer");
+      const cartBackdrop = document.getElementById("cartBackdrop");
+
+      function openCart() {
+        if (cartDrawer && cartBackdrop) {
+          cartDrawer.classList.add("open");
+          cartBackdrop.classList.add("open");
+        }
+      }
+
+      function closeCart() {
+        if (cartDrawer && cartBackdrop) {
+          cartDrawer.classList.remove("open");
+          cartBackdrop.classList.remove("open");
+        }
+      }
+
+      document.getElementById("btnCart")?.addEventListener("click", openCart);
+      document.getElementById("btnCloseCart")?.addEventListener("click", closeCart);
+      document.getElementById("cartBackdrop")?.addEventListener("click", closeCart);
+
+      document.getElementById("btnCheckout")?.addEventListener("click", () => {
+        if (cart.length === 0) {
+          showToast("Your bag is empty! Add a celestial piece first.");
+          return;
+        }
+        showToast("✦ Express One-Page Checkout Initiated!");
+        setTimeout(() => {
+          alert(`Thank you for ordering with Linora Stellar!\nTotal: ${document.getElementById("cartTotalDisplay").textContent}\nNora Tamer has received your brief and notification.`);
+          cart = [];
+          updateCartUI();
+          closeCart();
+        }, 600);
+      });
+
+      // Simple Search Mock
+      document.getElementById("btnSearch")?.addEventListener("click", () => {
+        const query = prompt("Search Linora Stellar (e.g. planner, labels, hoodie):");
+        if (query) {
+          const el = document.getElementById("products");
+          if (el) el.scrollIntoView({ behavior: "smooth" });
+          showToast(`Filtered for: "${query}"`);
+        }
+      });
+
+      function showToast(msg) {
+        const toast = document.getElementById("toastMsg");
+        const text = document.getElementById("toastText");
+        if (toast && text) {
+          text.textContent = msg;
+          toast.classList.add("show");
+          setTimeout(() => toast.classList.remove("show"), 2800);
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

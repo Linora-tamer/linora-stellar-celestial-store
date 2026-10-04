@@ -134,6 +134,10 @@ export function saveStoredReviews(reviews: ProductReview[]) {
   }
 }
 
+export function getInitialReviewsForProduct(productSlug: string): ProductReview[] {
+  return INITIAL_REVIEWS.filter((r) => r.product_slug === productSlug);
+}
+
 export function getReviewsForProduct(productSlug: string): ProductReview[] {
   const all = getStoredReviews();
   return all.filter((r) => r.product_slug === productSlug);

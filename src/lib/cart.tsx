@@ -11,18 +11,42 @@ export type CartItem = {
   options?: Record<string, string>;
 };
 
+export type PromoCoupon = {
+  code: string;
+  discountPercent?: number;
+  discountFixed?: number;
+  label: string;
+};
+
 type CartContextValue = {
   items: CartItem[];
-  add: (item: Omit<CartItem, "id">) => void;
+  add: (item: Omit<CartItem, "id">, openDrawer?: boolean) => void;
   remove: (id: string) => void;
   setQuantity: (id: string, quantity: number) => void;
   clear: () => void;
   count: number;
+  subtotal: number;
   total: number;
+  finalTotal: number;
+  discountAmount: number;
+  coupon: PromoCoupon | null;
+  applyCoupon: (code: string) => { success: boolean; message: string };
+  removeCoupon: () => void;
+  isDrawerOpen: boolean;
+  openDrawer: () => void;
+  closeDrawer: () => void;
+  toggleDrawer: () => void;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "linora-cart";
+const COUPON_STORAGE_KEY = "linora-cart-coupon";
+
+const VALID_COUPONS: Record<string, PromoCoupon> = {
+  STELLAR10: { code: "STELLAR10", discountPercent: 10, label: "10% off Celestial Drop" },
+  WELCOME50: { code: "WELCOME50", discountFixed: 50, label: "50 EGP Welcome Gift" },
+  NORA20: { code: "NORA20", discountPercent: 20, label: "20% VIP Star Discount" },
+};
 
 function keyFor(item: Omit<CartItem, "id">) {
   return [item.slug, JSON.stringify(item.options ?? {})].join("|");
@@ -31,11 +55,17 @@ function keyFor(item: Omit<CartItem, "id">) {
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [coupon, setCoupon] = useState<PromoCoupon | null>(null);
 
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setItems(JSON.parse(raw) as CartItem[]);
+      const savedCoupon = localStorage.getItem(COUPON_STORAGE_KEY);
+      if (savedCoupon && VALID_COUPONS[savedCoupon.toUpperCase()]) {
+        setCoupon(VALID_COUPONS[savedCoupon.toUpperCase()]!);
+      }
     } catch {
       /* ignore malformed cart */
     }
@@ -45,12 +75,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!loaded) return;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }, [items, loaded]);
+    if (coupon) {
+      localStorage.setItem(COUPON_STORAGE_KEY, coupon.code);
+    } else {
+      localStorage.removeItem(COUPON_STORAGE_KEY);
+    }
+  }, [items, coupon, loaded]);
 
   const value = useMemo<CartContextValue>(() => {
+    const subtotal = items.reduce((sum, c) => sum + c.quantity * c.price, 0);
+
+    let discountAmount = 0;
+    if (coupon) {
+      if (coupon.discountPercent) {
+        discountAmount = Math.round((subtotal * coupon.discountPercent) / 100);
+      } else if (coupon.discountFixed) {
+        discountAmount = Math.min(subtotal, coupon.discountFixed);
+      }
+    }
+    const finalTotal = Math.max(0, subtotal - discountAmount);
+
     return {
       items,
-      add: (item) =>
+      add: (item, openDrawer = true) => {
         setItems((current) => {
           const id = keyFor(item);
           const existing = current.find((c) => c.id === id);
@@ -60,7 +107,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
             );
           }
           return [...current, { ...item, id }];
-        }),
+        });
+        if (openDrawer) {
+          setIsDrawerOpen(true);
+        }
+      },
       remove: (id) => setItems((current) => current.filter((c) => c.id !== id)),
       setQuantity: (id, quantity) =>
         setItems((current) =>
@@ -68,11 +119,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
             ? current.filter((c) => c.id !== id)
             : current.map((c) => (c.id === id ? { ...c, quantity } : c)),
         ),
-      clear: () => setItems([]),
+      clear: () => {
+        setItems([]);
+        setCoupon(null);
+      },
       count: items.reduce((sum, c) => sum + c.quantity, 0),
-      total: items.reduce((sum, c) => sum + c.quantity * c.price, 0),
+      subtotal,
+      total: subtotal,
+      finalTotal,
+      discountAmount,
+      coupon,
+      applyCoupon: (code: string) => {
+        const clean = code.trim().toUpperCase();
+        const found = VALID_COUPONS[clean];
+        if (found) {
+          setCoupon(found);
+          return { success: true, message: `Promo code ${found.code} applied! (${found.label})` };
+        }
+        return { success: false, message: "Invalid promo code. Try STELLAR10 or WELCOME50." };
+      },
+      removeCoupon: () => setCoupon(null),
+      isDrawerOpen,
+      openDrawer: () => setIsDrawerOpen(true),
+      closeDrawer: () => setIsDrawerOpen(false),
+      toggleDrawer: () => setIsDrawerOpen((v) => !v),
     };
-  }, [items]);
+  }, [items, coupon, isDrawerOpen]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

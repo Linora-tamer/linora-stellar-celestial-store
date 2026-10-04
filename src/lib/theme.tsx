@@ -1,93 +1,174 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  TIME_PERIODS,
+  PERIOD_CONFIGS,
+  FOUR_THEMES,
+  getPeriodForDate,
+  applyThemeVariables,
+  type TimePeriod,
+  type PeriodThemeConfig,
+} from "./time-theme";
 
-export const THEMES = ["dawn", "morning", "day", "dusk", "night"] as const;
-export type Theme = (typeof THEMES)[number];
+export { TIME_PERIODS, PERIOD_CONFIGS, FOUR_THEMES, getPeriodForDate };
+export type { TimePeriod, PeriodThemeConfig };
 
-export const THEME_LABELS: Record<Theme, string> = {
+// Backward compatibility aliases
+export type Theme = TimePeriod;
+export const THEMES = ["midnight", "dawn", "daylight", "sunset"] as const;
+export const THEME_LABELS: Record<string, string> = {
+  midnight: "Midnight",
   dawn: "Dawn",
-  morning: "Morning",
-  day: "Day",
-  dusk: "Dusk",
-  night: "Night",
+  daylight: "Daylight",
+  sunset: "Sunset",
+  night: "Midnight",
+  day: "Daylight",
+  morning: "Daylight",
+  dusk: "Sunset",
 };
 
-export function themeForHour(hour: number): Theme {
-  if (hour >= 5 && hour < 8) return "dawn";
-  if (hour >= 8 && hour < 12) return "morning";
-  if (hour >= 12 && hour < 17) return "day";
-  if (hour >= 17 && hour < 20) return "dusk";
-  return "night";
+const DEFAULT_PERIOD: TimePeriod = "midnight";
+
+export interface ThemeContextValue {
+  period: TimePeriod;
+  theme: TimePeriod;
+  config: PeriodThemeConfig;
+  auto: boolean;
+  localTime: string;
+  mounted: boolean;
+  setPeriod: (period: TimePeriod) => void;
+  setTheme: (theme: TimePeriod) => void;
+  resetToAuto: () => void;
+  setAuto: (auto: boolean) => void;
 }
 
-type ThemeContextValue = {
-  theme: Theme;
-  auto: boolean;
-  setTheme: (theme: Theme) => void;
-  setAuto: (auto: boolean) => void;
-};
+const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-const ThemeContext = createContext<ThemeContextValue>({
-  theme: "night",
-  auto: true,
-  setTheme: () => {},
-  setAuto: () => {},
-});
-
-const STORAGE_KEY = "linora-theme";
+const STORAGE_KEY = "linora-stellar-time-period";
+const STORAGE_AUTO_KEY = "linora-stellar-auto-theme";
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("night");
-  const [auto, setAutoState] = useState(true);
+  // Use stable default for SSR and initial client hydration
+  const [period, setPeriodState] = useState<TimePeriod>(DEFAULT_PERIOD);
+  const [auto, setAutoState] = useState<boolean>(true);
+  const [localTime, setLocalTime] = useState<string>("");
+  const [mounted, setMounted] = useState<boolean>(false);
 
-  // Apply the visitor's local time-of-day theme after hydration.
+  // Update clock string helper
+  const updateLocalTimeString = useCallback(() => {
+    const now = new Date();
+    setLocalTime(
+      now.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+      }),
+    );
+  }, []);
+
+  // Initialize on mount
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored && stored !== "auto" && (THEMES as readonly string[]).includes(stored)) {
+    setMounted(true);
+    updateLocalTimeString();
+
+    const storedAuto = localStorage.getItem(STORAGE_AUTO_KEY);
+    const storedPeriod = localStorage.getItem(STORAGE_KEY) as TimePeriod | null;
+
+    if (storedAuto === "false" && storedPeriod && TIME_PERIODS.includes(storedPeriod)) {
       setAutoState(false);
-      setThemeState(stored as Theme);
-      return;
+      setPeriodState(storedPeriod);
+      applyThemeVariables(storedPeriod);
+    } else {
+      setAutoState(true);
+      const current = getPeriodForDate();
+      setPeriodState(current);
+      applyThemeVariables(current);
     }
-    setAutoState(true);
-    setThemeState(themeForHour(new Date().getHours()));
-  }, []);
+  }, [updateLocalTimeString]);
 
-  // Keep the automatic theme in step with the clock / timezone changes.
+  // Real-time engine: monitors local clock every 10 seconds and automatically updates period
   useEffect(() => {
-    if (!auto) return;
-    const tick = () => setThemeState(themeForHour(new Date().getHours()));
-    tick();
-    const id = window.setInterval(tick, 60_000);
-    const onFocus = () => tick();
-    window.addEventListener("focus", onFocus);
-    return () => {
-      window.clearInterval(id);
-      window.removeEventListener("focus", onFocus);
+    const interval = window.setInterval(() => {
+      updateLocalTimeString();
+
+      if (auto) {
+        const next = getPeriodForDate();
+        setPeriodState((prev) => {
+          if (prev !== next) {
+            applyThemeVariables(next);
+            return next;
+          }
+          return prev;
+        });
+      }
+    }, 10_000);
+
+    // Also update on tab visibility change / focus (e.g. computer wake from sleep)
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        updateLocalTimeString();
+        if (auto) {
+          const fresh = getPeriodForDate();
+          setPeriodState(fresh);
+          applyThemeVariables(fresh);
+        }
+      }
     };
-  }, [auto]);
+    window.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("focus", onVisibilityChange);
 
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("focus", onVisibilityChange);
+    };
+  }, [auto, updateLocalTimeString]);
 
-  const setTheme = useCallback((next: Theme) => {
+  // Manual override (for previewing other periods)
+  const setPeriod = useCallback((nextPeriod: TimePeriod) => {
     setAutoState(false);
-    setThemeState(next);
-    localStorage.setItem(STORAGE_KEY, next);
+    setPeriodState(nextPeriod);
+    localStorage.setItem(STORAGE_AUTO_KEY, "false");
+    localStorage.setItem(STORAGE_KEY, nextPeriod);
+    applyThemeVariables(nextPeriod);
   }, []);
 
-  const setAuto = useCallback((next: boolean) => {
-    setAutoState(next);
-    if (next) {
-      localStorage.setItem(STORAGE_KEY, "auto");
-      setThemeState(themeForHour(new Date().getHours()));
-    }
+  // Return to automatic live local time
+  const resetToAuto = useCallback(() => {
+    setAutoState(true);
+    localStorage.removeItem(STORAGE_AUTO_KEY);
+    localStorage.removeItem(STORAGE_KEY);
+    const live = getPeriodForDate();
+    setPeriodState(live);
+    applyThemeVariables(live);
   }, []);
+
+  const config = PERIOD_CONFIGS[period] || PERIOD_CONFIGS.night;
 
   return (
-    <ThemeContext.Provider value={{ theme, auto, setTheme, setAuto }}>
+    <ThemeContext.Provider
+      value={{
+        period,
+        theme: period,
+        config,
+        auto,
+        localTime,
+        mounted,
+        setPeriod,
+        setTheme: setPeriod,
+        resetToAuto,
+        setAuto: setAutoState,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );
 }
 
-export const useTheme = () => useContext(ThemeContext);
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error("useTheme must be used within a ThemeProvider");
+  }
+  return context;
+}

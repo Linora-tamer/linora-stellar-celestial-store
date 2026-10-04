@@ -16,6 +16,7 @@ import { CartProvider } from "@/lib/cart";
 import { WishlistProvider } from "@/lib/wishlist";
 import { ThemeProvider } from "@/lib/theme";
 import { I18nProvider } from "@/lib/i18n";
+import { ReadabilityProvider } from "@/lib/readability";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -104,7 +105,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Jost:wght@300;400;500;600&family=Tajawal:wght@300;400;500;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Jost:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;1,400&family=Tajawal:wght@300;400;500;700&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
@@ -117,7 +118,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" dir="ltr" data-theme="night" suppressHydrationWarning>
+    <html lang="en" dir="ltr" data-theme="midnight" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
@@ -136,15 +137,17 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
         <ThemeProvider>
-          <WishlistProvider>
-            <CartProvider>
-              <SiteLayout>
-                {/* Required: nested routes render here. */}
-                <Outlet />
-              </SiteLayout>
-              <Toaster />
-            </CartProvider>
-          </WishlistProvider>
+          <ReadabilityProvider>
+            <WishlistProvider>
+              <CartProvider>
+                <SiteLayout>
+                  {/* Required: nested routes render here. */}
+                  <Outlet />
+                </SiteLayout>
+                <Toaster />
+              </CartProvider>
+            </WishlistProvider>
+          </ReadabilityProvider>
         </ThemeProvider>
       </I18nProvider>
     </QueryClientProvider>

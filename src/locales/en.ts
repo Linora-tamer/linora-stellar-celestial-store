@@ -1,4 +1,6 @@
 export const en = {
+  "nav.home": "Home",
+  "nav.about": "About",
   "nav.shop": "Shop",
   "nav.story": "Our Story",
   "nav.portfolio": "Portfolio",

@@ -34,27 +34,34 @@ const WishlistContext = createContext<WishlistContextType | null>(null);
 const STORAGE_KEY = "linora_wishlist";
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<WishlistItem[]>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) return JSON.parse(saved);
-      } catch {
-        // ignore
-      }
-    }
-    return [];
-  });
+  const [items, setItems] = useState<WishlistItem[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   const { t, pick } = useI18n();
 
   useEffect(() => {
     try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setItems(parsed);
+        }
+      }
+    } catch {
+      // ignore
+    }
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
+    try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     } catch {
       // ignore
     }
-  }, [items]);
+  }, [items, loaded]);
 
   const isWishlisted = useCallback(
     (slugOrId: string) => {

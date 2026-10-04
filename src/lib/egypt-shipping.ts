@@ -355,3 +355,27 @@ export function getGovernorate(idOrName: string): EgyptianGovernorate | undefine
       norm.includes(g.nameEn.toLowerCase()),
   );
 }
+
+// Aliases for quick access in express checkout & checkout
+export const EGYPT_GOVERNORATES = EGYPTIAN_GOVERNORATES;
+
+export function calculateEgyptShipping(
+  governorateId: string,
+  items: Array<{ slug?: string; name?: string }> = [],
+): { fee: number; free: boolean; estimatedDays: string; estimatedDaysAr: string } {
+  if (items.length > 0 && !requiresPhysicalShipping(items)) {
+    return {
+      fee: 0,
+      free: true,
+      estimatedDays: "Instant digital delivery",
+      estimatedDaysAr: "تسليم رقمي فوري",
+    };
+  }
+  const gov = getGovernorate(governorateId) ?? EGYPTIAN_GOVERNORATES[0]!;
+  return {
+    fee: gov.fee,
+    free: false,
+    estimatedDays: gov.estimatedDays,
+    estimatedDaysAr: gov.estimatedDaysAr,
+  };
+}

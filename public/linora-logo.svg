@@ -1,0 +1,37 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sealGoldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF2D6" />
+      <stop offset="35%" stop-color="#DFAD71" />
+      <stop offset="70%" stop-color="#B68040" />
+      <stop offset="100%" stop-color="#E5B980" />
+    </linearGradient>
+    <radialGradient id="sealNightSky" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#14213d" />
+      <stop offset="65%" stop-color="#0a0f1d" />
+      <stop offset="100%" stop-color="#04060b" />
+    </radialGradient>
+  </defs>
+
+  <circle cx="100" cy="100" r="96" fill="url(#sealNightSky)" />
+  <circle cx="100" cy="100" r="95" stroke="url(#sealGoldBorder)" stroke-width="3" fill="none" />
+  <circle cx="100" cy="100" r="90" stroke="url(#sealGoldBorder)" stroke-width="0.8" opacity="0.6" fill="none" />
+
+  <circle cx="45" cy="50" r="1.5" fill="#FFEBBF" opacity="0.8" />
+  <circle cx="155" cy="45" r="1.5" fill="#FFEBBF" opacity="0.8" />
+  <circle cx="160" cy="120" r="1.2" fill="#FFEBBF" opacity="0.7" />
+  <circle cx="40" cy="130" r="1.2" fill="#FFEBBF" opacity="0.7" />
+  <circle cx="100" cy="25" r="1.4" fill="#FFFFFF" opacity="0.9" />
+
+  <ellipse cx="100" cy="68" rx="52" ry="19" transform="rotate(-20 100 68)" stroke="url(#sealGoldBorder)" stroke-width="2.4" fill="none" opacity="0.9" />
+
+  <path d="M100 32 C100 55 86 68 60 68 C86 68 100 81 100 104 C100 81 114 68 140 68 C114 68 100 55 100 32 Z" fill="url(#sealGoldBorder)" />
+  <circle cx="100" cy="68" r="2.8" fill="#FFFFFF" />
+
+  <text x="100" y="126" text-anchor="middle" fill="url(#sealGoldBorder)" font-family="Georgia, serif" font-size="22" font-weight="bold" letter-spacing="4">LINORA</text>
+  <line x1="48" y1="135" x2="82" y2="135" stroke="url(#sealGoldBorder)" stroke-width="0.8" opacity="0.7" />
+  <circle cx="100" cy="135" r="1.5" fill="url(#sealGoldBorder)" />
+  <line x1="118" y1="135" x2="152" y2="135" stroke="url(#sealGoldBorder)" stroke-width="0.8" opacity="0.7" />
+  <text x="100" y="148" text-anchor="middle" fill="url(#sealGoldBorder)" font-family="sans-serif" font-size="9" font-weight="600" letter-spacing="5">STELLAR</text>
+  <text x="100" y="164" text-anchor="middle" fill="url(#sealGoldBorder)" font-family="sans-serif" font-size="7" font-weight="400" letter-spacing="3">DIGITAL &amp; PAPER GOODS</text>
+</svg>
