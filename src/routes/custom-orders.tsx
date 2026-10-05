@@ -117,6 +117,8 @@ function CustomOrdersPage() {
     preferredColors: "",
     budget: "1000 - 3000 EGP",
     deadline: "1-2 weeks",
+    printDirectly: false,
+    printProductType: "Ceramic Mug",
   });
   const [proofApproved, setProofApproved] = useState<boolean>(false);
   const [revisionNotes, setRevisionNotes] = useState<string>("");
@@ -625,6 +627,70 @@ Brief: ${formData.description}
                   </select>
                 </div>
               </div>
+
+              {/* Direct POD Print Option on Approved Design */}
+              <div className="rounded-2xl border border-accent/40 bg-accent/5 p-4 sm:p-5 card-star">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.printDirectly}
+                    onChange={(e) => setFormData({ ...formData, printDirectly: e.target.checked })}
+                    className="mt-1 h-4 w-4 rounded border-border text-accent focus:ring-accent accent-[#DFAD71]"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-sm text-text-primary">
+                        {isAr
+                          ? "🖨️ طباعة التصميم النهائي المعتمد مباشرة (استوديو الطباعة والتوصيل)"
+                          : "🖨️ Print the final approved design directly (POD & Delivery)"}
+                      </span>
+                      <span className="rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-bold text-accent">
+                        {isAr ? "موصى به" : "Recommended"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-text-secondary mt-1 leading-relaxed">
+                      {isAr
+                        ? "بمجرد اعتمادك للبروفا والتصميم، سنقوم بطباعته وشحنه لباب منزلك كمنتج فيزيائي فاخر بجانب ملفاتك الرقمية عالية الدقة."
+                        : "Upon your final approval, we can directly print and ship the finished piece (mugs, t-shirts, hardcover planners, canvas) directly to your doorstep in Egypt."}
+                    </p>
+
+                    {formData.printDirectly && (
+                      <div className="mt-3.5 pt-3 border-t border-accent/20 flex flex-wrap items-center gap-3 animate-in fade-in duration-200">
+                        <label className="text-xs font-semibold text-text-primary">
+                          {isAr ? "نوع المنتج المراد طباعته:" : "Physical Product to Print:"}
+                        </label>
+                        <select
+                          value={formData.printProductType}
+                          onChange={(e) =>
+                            setFormData({ ...formData, printProductType: e.target.value })
+                          }
+                          className="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs text-text-primary outline-none focus:border-accent"
+                        >
+                          <option value="Ceramic Mug">
+                            {isAr ? "مج سيراميك فلكي (Ceramic Mug)" : "Ceramic Mug (11oz / 15oz)"}
+                          </option>
+                          <option value="Organic Cotton T-Shirt">
+                            {isAr ? "تيشيرت قطن عضوي (T-Shirt)" : "Organic Cotton T-Shirt"}
+                          </option>
+                          <option value="Hardcover Planner">
+                            {isAr
+                              ? "بلانر بغلاف صلب وسلك نحاسي (Planner)"
+                              : "Hardcover Spiral Planner"}
+                          </option>
+                          <option value="Canvas Tote Bag">
+                            {isAr ? "حقيبة قماشية فاخرة (Tote Bag)" : "Canvas Eco Tote Bag"}
+                          </option>
+                          <option value="Framed Fine Art Wall Print">
+                            {isAr
+                              ? "لوحة جدارية مؤطرة (Framed Wall Art)"
+                              : "Framed Fine Art Wall Print"}
+                          </option>
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                </label>
+              </div>
             </div>
 
             <div className="flex justify-between pt-4">
@@ -927,6 +993,24 @@ Brief: ${formData.description}
                       ✦ Canva Editable Link
                     </span>
                   </div>
+
+                  {formData.printDirectly && (
+                    <div className="mt-3.5 rounded-xl border border-accent/40 bg-accent/10 p-3 flex items-center gap-3">
+                      <span className="text-xl">📦</span>
+                      <div className="text-start">
+                        <p className="text-xs font-bold text-accent">
+                          {isAr
+                            ? `طباعة وشحن فيزيائي: سيتم إنتاج التصميم كـ (${formData.printProductType}) وشحنه لباب منزلك`
+                            : `Physical Print & Dispatch: Your design will be produced as a (${formData.printProductType}) and shipped directly`}
+                        </p>
+                        <p className="text-[11px] text-text-secondary">
+                          {isAr
+                            ? "فريق نورا تامر للطباعة سيتواصل معك عبر واتساب لتأكيد خامات الطباعة والعنوان"
+                            : "Nora Tamer's print lab will confirm material finish and shipping address via WhatsApp"}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

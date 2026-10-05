@@ -34,40 +34,28 @@ const DEFAULT_SETTINGS: ReadabilitySettings = {
 const ReadabilityContext = createContext<ReadabilityContextValue | null>(null);
 
 export function ReadabilityProvider({ children }: { children: ReactNode }) {
-  const [overlayActive, setOverlayActiveState] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return localStorage.getItem(STORAGE_KEYS.overlay) === "true";
-    } catch {
-      return false;
-    }
-  });
+  const [overlayActive, setOverlayActiveState] = useState<boolean>(false);
+  const [fontWeight, setFontWeightState] = useState<FontWeight>("normal");
+  const [contrastMode, setContrastModeState] = useState<ContrastMode>("standard");
 
-  const [fontWeight, setFontWeightState] = useState<FontWeight>(() => {
-    if (typeof window === "undefined") return "normal";
+  // Read stored preferences on mount to avoid SSR hydration mismatch
+  useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.weight) as FontWeight | null;
-      if (stored === "normal" || stored === "medium" || stored === "bold") {
-        return stored;
+      if (localStorage.getItem(STORAGE_KEYS.overlay) === "true") {
+        setOverlayActiveState(true);
+      }
+      const storedWeight = localStorage.getItem(STORAGE_KEYS.weight) as FontWeight | null;
+      if (storedWeight === "normal" || storedWeight === "medium" || storedWeight === "bold") {
+        setFontWeightState(storedWeight);
+      }
+      const storedContrast = localStorage.getItem(STORAGE_KEYS.contrast) as ContrastMode | null;
+      if (storedContrast === "standard" || storedContrast === "high" || storedContrast === "max") {
+        setContrastModeState(storedContrast);
       }
     } catch {
       // ignore
     }
-    return "normal";
-  });
-
-  const [contrastMode, setContrastModeState] = useState<ContrastMode>(() => {
-    if (typeof window === "undefined") return "standard";
-    try {
-      const stored = localStorage.getItem(STORAGE_KEYS.contrast) as ContrastMode | null;
-      if (stored === "standard" || stored === "high" || stored === "max") {
-        return stored;
-      }
-    } catch {
-      // ignore
-    }
-    return "standard";
-  });
+  }, []);
 
   // Apply attributes to <html> root
   useEffect(() => {

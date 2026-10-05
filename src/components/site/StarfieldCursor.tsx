@@ -321,15 +321,18 @@ export function StarCursorToggle({
   className?: string;
   showText?: boolean;
 }) {
-  const [active, setActive] = useState<boolean>(() => {
-    if (typeof window === "undefined") return true;
+  const [active, setActive] = useState<boolean>(true);
+
+  useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      return stored !== "false";
+      if (stored === "false") {
+        setActive(false);
+      }
     } catch {
-      return true;
+      // ignore
     }
-  });
+  }, []);
 
   const toggle = () => {
     const next = !active;

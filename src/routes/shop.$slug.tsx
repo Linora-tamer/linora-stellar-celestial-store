@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Heart,
   Truck,
@@ -74,6 +74,15 @@ function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIdx, setSelectedImageIdx] = useState(0);
   const [expressOpen, setExpressOpen] = useState(false);
+  const [showStickyBar, setShowStickyBar] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowStickyBar(window.scrollY > 450);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Accordion open states
   const [openAccordion, setOpenAccordion] = useState<string>("details");
@@ -576,6 +585,45 @@ function ProductPage() {
         selectedSize={size}
         personalName={personalName}
       />
+
+      {/* Sticky Add to Cart Bar (Visible on Scroll) */}
+      {showStickyBar && (
+        <div className="fixed bottom-0 inset-x-0 z-40 border-t border-border/80 bg-surface/95 backdrop-blur-xl py-3 px-4 shadow-2xl transition-all animate-in slide-in-from-bottom duration-300">
+          <div className="mx-auto max-w-7xl flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 min-w-0">
+              <img
+                src={productImage(product.slug, product.image_url)}
+                alt={displayName}
+                className="h-11 w-11 rounded-xl object-cover border border-border shadow-xs shrink-0"
+              />
+              <div className="min-w-0">
+                <p className="font-semibold text-xs sm:text-sm text-text-primary truncate">
+                  {displayName}
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-accent text-sm sm:text-base">
+                    {formatPrice(product.price, lang)}
+                  </span>
+                  <span className="text-[10px] text-text-secondary hidden sm:inline">
+                    • {color} / {size}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={addToCart}
+                className="flex items-center gap-2 rounded-full bg-accent px-5 sm:px-7 py-2.5 text-xs font-bold uppercase tracking-wider text-background hover:brightness-110 shadow-lg shadow-accent/25 transition-all"
+              >
+                <ShoppingBag className="h-4 w-4" />
+                <span>{t("product.addToCart")}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

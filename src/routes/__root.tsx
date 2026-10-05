@@ -120,6 +120,33 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en" dir="ltr" data-theme="midnight" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (typeof window !== "undefined") {
+                window.addEventListener("unhandledrejection", function(e) {
+                  var r = e && e.reason;
+                  var m = (r && (r.message || String(r))) || "";
+                  if (m.indexOf("send was called before connect") !== -1 || m.indexOf("SendBeforeConnectError") !== -1 || m.indexOf("WebSocket closed without opened") !== -1) {
+                    e.preventDefault();
+                    if (typeof e.stopImmediatePropagation === "function") {
+                      e.stopImmediatePropagation();
+                    }
+                  }
+                }, true);
+                window.addEventListener("error", function(e) {
+                  var m = (e && (e.message || String(e))) || "";
+                  if (m.indexOf("send was called before connect") !== -1 || m.indexOf("SendBeforeConnectError") !== -1 || m.indexOf("WebSocket closed without opened") !== -1) {
+                    e.preventDefault();
+                    if (typeof e.stopImmediatePropagation === "function") {
+                      e.stopImmediatePropagation();
+                    }
+                  }
+                }, true);
+              }
+            `,
+          }}
+        />
         <HeadContent />
       </head>
       <body>

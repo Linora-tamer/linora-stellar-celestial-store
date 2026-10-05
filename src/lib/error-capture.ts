@@ -52,8 +52,20 @@ function isErrorLike(value: unknown): value is Error {
 // Wrap console.error so errors logged by any layer — including h3's internal
 // unhandled-error logging, which this file cannot hook directly — are both
 // recorded for consumeLastCapturedError and expanded before serialization.
+function isIgnorableHmrError(error: unknown): boolean {
+  if (!error) return false;
+  const msg = typeof error === "string" ? error : ((error as { message?: string }).message ?? "");
+  return (
+    msg.includes("send was called before connect") ||
+    msg.includes("SendBeforeConnectError") ||
+    msg.includes("WebSocket closed without opened") ||
+    msg.includes("vite:ws:disconnect")
+  );
+}
+
 const originalConsoleError = console.error.bind(console);
 console.error = (...args: unknown[]) => {
+  if (args.some(isIgnorableHmrError)) return;
   const expanded = args.map((arg) => {
     if (!isErrorLike(arg)) return arg;
     record(arg);
@@ -63,10 +75,16 @@ console.error = (...args: unknown[]) => {
 };
 
 if (typeof globalThis.addEventListener === "function") {
-  globalThis.addEventListener("error", (event) => record((event as ErrorEvent).error ?? event));
-  globalThis.addEventListener("unhandledrejection", (event) =>
-    record((event as PromiseRejectionEvent).reason),
-  );
+  globalThis.addEventListener("error", (event) => {
+    const err = (event as ErrorEvent).error ?? event;
+    if (isIgnorableHmrError(err)) return;
+    record(err);
+  });
+  globalThis.addEventListener("unhandledrejection", (event) => {
+    const reason = (event as PromiseRejectionEvent).reason;
+    if (isIgnorableHmrError(reason)) return;
+    record(reason);
+  });
 }
 
 export function consumeLastCapturedError(): unknown {

@@ -7,6 +7,30 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  vite: {
+    plugins: [
+      {
+        name: "suppress-vite-send-before-connect",
+        enforce: "pre",
+        transform(code, id) {
+          if (id.includes("/vite/dist/client/client.mjs")) {
+            return {
+              code: code
+                .replace(
+                  'else throw new SendBeforeConnectError("send was called before connect");',
+                  "else return;",
+                )
+                .replace(
+                  'else throw new SendBeforeConnectError("invoke was called before connect");',
+                  "else return;",
+                ),
+              map: null,
+            };
+          }
+        },
+      },
+    ],
+  },
   nitro: {
     output: {
       dir: "dist",

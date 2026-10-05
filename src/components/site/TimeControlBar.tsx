@@ -41,14 +41,17 @@ export function TimeControlBar({ isPinned = true, onTogglePin, onOpenHub }: Time
   const isAr = lang === "ar";
 
   // Collapsed state: user can collapse to a super thin bar to maximize screen real estate
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+
+  useEffect(() => {
     try {
-      return localStorage.getItem("linora_topbar_collapsed") === "true";
+      if (localStorage.getItem("linora_topbar_collapsed") === "true") {
+        setIsCollapsed(true);
+      }
     } catch {
-      return false;
+      // ignore
     }
-  });
+  }, []);
 
   const toggleCollapsed = () => {
     setIsCollapsed((prev) => {
