@@ -14,11 +14,12 @@ import {
   FolderOpen,
   ShoppingBag,
   Sparkles,
-  Mail,
-  Send,
   RefreshCw,
-  Bell,
   Bot,
+  Inbox,
+  Tag,
+  LayoutDashboard,
+  Save,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -28,6 +29,8 @@ import { useAuth } from "@/lib/auth";
 import { formatPrice } from "@/lib/cart";
 import { categoriesQuery } from "@/lib/store";
 import { generateAdminSummaryReport } from "@/lib/gemini";
+import { productImage } from "@/lib/product-images";
+import { uploadProductImage } from "@/lib/product-image-upload";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -44,7 +47,7 @@ export const Route = createFileRoute("/admin")({
   component: Admin,
 });
 
-type TabType = "orders" | "custom_requests" | "categories";
+type TabType = "orders" | "custom_requests" | "categories" | "products" | "messages";
 
 type OrderItem = {
   id: string;
@@ -58,6 +61,7 @@ type OrderItem = {
   total: number;
   payment_method: string;
   payment_reference: string | null;
+  payment_status?: string | null;
   created_at: string;
 };
 
@@ -81,7 +85,7 @@ type CategoryItem = {
   id: string;
   slug: string;
   name: string;
-  name_ar?: string;
+  name_ar?: string | null;
   description: string | null;
   description_ar?: string | null;
   sort_order: number;
@@ -146,7 +150,6 @@ function Admin() {
   // AI Smart Summary & Nora Email Notifications state
   const [aiReport, setAiReport] = useState<string>("");
   const [loadingAi, setLoadingAi] = useState<boolean>(false);
-  const [testEmailSent, setTestEmailSent] = useState<boolean>(false);
 
   useEffect(() => {
     if (!loading && !user && !isOwner) {
@@ -193,6 +196,19 @@ function Admin() {
       return;
     }
     toast.success(`Order status updated to ${newStatus}`);
+    refetchOrders();
+  }
+
+  async function markOrderPaid(orderId: string) {
+    const { error } = await supabase
+      .from("orders")
+      .update({ payment_status: "paid", paid_at: new Date().toISOString() })
+      .eq("id", orderId);
+    if (error) {
+      toast.error("Failed to mark order as paid");
+      return;
+    }
+    toast.success("Order marked as paid");
     refetchOrders();
   }
 
@@ -412,18 +428,6 @@ function Admin() {
                   <RefreshCw className={`h-3.5 w-3.5 ${loadingAi ? "animate-spin" : ""}`} />
                   <span>{loadingAi ? "Analyzing Data…" : "Regenerate AI Report"}</span>
                 </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setTestEmailSent(true);
-                    toast.success("Instant notification dispatched to norafayed06@gmail.com!");
-                  }}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-gold/60 bg-gold/15 px-3.5 py-1.5 text-xs text-gold hover:bg-gold hover:text-background transition-colors font-semibold shadow-xs"
-                >
-                  <Send className="h-3.5 w-3.5" />
-                  <span>Test Email to norafayed06@gmail.com</span>
-                </button>
               </div>
             </div>
 
@@ -437,102 +441,68 @@ function Admin() {
               ) : aiReport ? (
                 <div className="space-y-2 whitespace-pre-line">{aiReport}</div>
               ) : (
-                <div className="space-y-1 text-muted-foreground">
-                  <p className="text-foreground font-medium">
-                    ✦ Hello Nora! Here is your studio overview:
-                  </p>
-                  <p>
-                    • {orders.length} total orders recorded, with {pendingOrdersCount} awaiting
-                    payment verification (Vodafone Cash / InstaPay).
-                  </p>
-                  <p>
-                    • Priority today: Confirm pending transfer receipts and pack Cairo & Giza
-                    stationery shipments.
-                  </p>
-                  <p>
-                    • Strategic tip: High demand for custom school labels and digital life planners
-                    this week — consider highlighting them on your homepage.
-                  </p>
-                </div>
+                <p className="text-muted-foreground">Press “Regenerate AI Report” to get a summary of your orders (needs a Gemini API key).</p>
               )}
             </div>
-
-            {/* Instant Notification Status Banner */}
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-xs text-emerald-400">
-              <div className="flex items-center gap-2">
-                <Bell className="h-4 w-4 shrink-0 text-emerald-400 animate-pulse" />
-                <span>
-                  <strong>Dual Notification Active:</strong> Detailed order & design alerts
-                  automatically route to your personal phone inbox (
-                  <code>norafayed06@gmail.com</code>) upon submission.
-                </span>
-              </div>
-              {testEmailSent && (
-                <span className="flex items-center gap-1 font-mono text-[11px] text-emerald-300">
-                  <CheckCircle2 className="h-3.5 w-3.5" /> Sent successfully
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Tab Navigation */}
-          <div className="mt-8 flex gap-2 border-b border-border/60">
-            <button
-              type="button"
-              onClick={() => setCurrentTab("orders")}
-              className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
-                currentTab === "orders"
-                  ? "border-gold text-gold"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Package className="h-4 w-4" />
-              <span>Orders & Payments</span>
-              {pendingOrdersCount > 0 && (
-                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs text-amber-400">
-                  {pendingOrdersCount}
-                </span>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setCurrentTab("custom_requests")}
-              className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
-                currentTab === "custom_requests"
-                  ? "border-gold text-gold"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Sparkles className="h-4 w-4" />
-              <span>Custom Design Requests</span>
-              <span className="rounded-full bg-card px-2 py-0.5 text-xs text-muted-foreground">
-                {requests.length}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setCurrentTab("categories")}
-              className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
-                currentTab === "categories"
-                  ? "border-gold text-gold"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <FolderOpen className="h-4 w-4" />
-              <span>Category Manager</span>
-              <span className="rounded-full bg-card px-2 py-0.5 text-xs text-muted-foreground">
-                {categories.length}
-              </span>
-            </button>
           </div>
         </div>
       </section>
 
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8 lg:flex-row lg:px-8">
+        <aside
+          aria-label="Dashboard menu"
+          className="flex shrink-0 gap-1 overflow-x-auto rounded-2xl border border-gold/30 bg-surface/85 p-2 backdrop-blur-md lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:w-64 lg:flex-col lg:self-start lg:overflow-y-auto lg:p-3"
+        >
+          <p className="hidden items-center gap-2 px-3 pb-2 pt-1 text-[11px] uppercase tracking-[0.25em] text-gold lg:flex">
+            <LayoutDashboard className="h-3.5 w-3.5" /> Menu
+          </p>
+          {(
+            [
+              { id: "orders", label: "Orders & Payments", icon: Package, badge: pendingOrdersCount },
+              { id: "custom_requests", label: "Custom Requests", icon: Sparkles, badge: requests.length },
+              { id: "products", label: "Products & Prices", icon: Tag, badge: 0 },
+              { id: "categories", label: "Categories", icon: FolderOpen, badge: categories.length },
+              { id: "messages", label: "Messages", icon: Inbox, badge: 0 },
+            ] as const
+          ).map((item) => {
+            const Icon = item.icon;
+            const active = currentTab === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setCurrentTab(item.id)}
+                aria-current={active ? "page" : undefined}
+                className={`flex shrink-0 items-center gap-3 whitespace-nowrap rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                  active
+                    ? "bg-gold/15 text-gold"
+                    : "text-muted-foreground hover:bg-card hover:text-foreground"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                <span className="flex-1 text-left">{item.label}</span>
+                {item.badge > 0 && (
+                  <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs text-amber-400">
+                    {item.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+          <Link
+            to="/shop"
+            className="mt-1 flex shrink-0 items-center gap-3 whitespace-nowrap rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:bg-card hover:text-foreground lg:mt-3 lg:border-t lg:border-border/60"
+          >
+            <ShoppingBag className="h-4 w-4" />
+            <span>View Storefront</span>
+          </Link>
+        </aside>
+
+        <div className="min-w-0 flex-1">
+
       {/* Tab 1: Orders & Payment Verification */}
       {currentTab === "orders" && (
-        <section className="mx-auto max-w-7xl px-4 py-10 lg:px-8">
+        <section className="py-2">
           <div className="flex items-center justify-between">
             <h2 className="font-display text-2xl">Customer Orders ({orders.length})</h2>
           </div>
@@ -563,6 +533,23 @@ function Admin() {
                             {o.order_number}
                           </span>
                           {statusBadge(o.status)}
+                          {o.payment_status === "paid" ? (
+                            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
+                              Paid
+                            </span>
+                          ) : o.payment_status === "pending" ? (
+                            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-400">
+                              Card payment pending
+                            </span>
+                          ) : o.payment_status === "failed" ? (
+                            <span className="rounded-full border border-rose-500/30 bg-rose-500/10 px-2.5 py-0.5 text-xs font-medium text-rose-400">
+                              Payment failed
+                            </span>
+                          ) : (
+                            <span className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground">
+                              Unpaid
+                            </span>
+                          )}
                           <span className="text-xs text-muted-foreground">
                             {new Date(o.created_at).toLocaleDateString()} at{" "}
                             {new Date(o.created_at).toLocaleTimeString([], {
@@ -627,6 +614,19 @@ function Admin() {
                           </a>
                         )}
 
+                        {o.payment_method !== "card" &&
+                          o.payment_method !== "cod" &&
+                          o.payment_status !== "paid" && (
+                            <button
+                              type="button"
+                              onClick={() => markOrderPaid(o.id)}
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-gold/50 bg-gold/10 px-3 py-1.5 text-xs font-medium text-gold hover:bg-gold/20"
+                            >
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                              <span>Mark paid</span>
+                            </button>
+                          )}
+
                         {o.status === "pending" && (
                           <button
                             type="button"
@@ -683,7 +683,7 @@ function Admin() {
 
       {/* Tab 2: Custom Design Requests */}
       {currentTab === "custom_requests" && (
-        <section className="mx-auto max-w-7xl px-4 py-10 lg:px-8">
+        <section className="py-2">
           <h2 className="font-display text-2xl">Custom Requests ({requests.length})</h2>
 
           {requests.length === 0 ? (
@@ -782,7 +782,7 @@ function Admin() {
 
       {/* Tab 3: Category Management */}
       {currentTab === "categories" && (
-        <section className="mx-auto max-w-7xl px-4 py-10 lg:px-8">
+        <section className="py-2">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="font-display text-2xl">Store Categories ({categories.length})</h2>
@@ -947,6 +947,353 @@ function Admin() {
           </div>
         </section>
       )}
+
+      {currentTab === "products" && <ProductsPanel />}
+      {currentTab === "messages" && <MessagesPanel />}
+        </div>
+      </div>
     </div>
+  );
+}
+
+type ProductRow = {
+  id: string;
+  name: string;
+  slug: string;
+  price: number;
+  image_url: string | null;
+  is_active: boolean | null;
+  is_featured: boolean | null;
+};
+
+const slugify = (v: string) =>
+  v
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+function ProductsPanel() {
+  const queryClient = useQueryClient();
+  const { data: categories = [] } = useQuery(categoriesQuery);
+  const { data: products = [], refetch } = useQuery({
+    queryKey: ["admin_products"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id,name,slug,price,image_url,is_active,is_featured")
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as ProductRow[];
+    },
+  });
+  const [edits, setEdits] = useState<Record<string, Partial<ProductRow>>>({});
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+
+  // "Add product" form
+  const [showNew, setShowNew] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newNameAr, setNewNameAr] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [newPrice, setNewPrice] = useState(0);
+  const [newCategory, setNewCategory] = useState("");
+  const [newImage, setNewImage] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+
+  function refreshAll() {
+    refetch();
+    queryClient.invalidateQueries({ queryKey: ["products"] });
+  }
+
+  async function save(id: string) {
+    const patch = edits[id];
+    if (!patch) return;
+    const { error } = await supabase.from("products").update(patch).eq("id", id);
+    if (error) {
+      toast.error("Failed to save product");
+      return;
+    }
+    toast.success("Product saved");
+    setEdits((e) => {
+      const { [id]: _removed, ...rest } = e;
+      return rest;
+    });
+    refreshAll();
+  }
+
+  async function changeImage(id: string, file: File | undefined) {
+    if (!file) return;
+    setUploadingId(id);
+    try {
+      const url = await uploadProductImage(file);
+      const { error } = await supabase.from("products").update({ image_url: url }).eq("id", id);
+      if (error) throw new Error(error.message);
+      toast.success("Image updated");
+      refreshAll();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Image upload failed");
+    } finally {
+      setUploadingId(null);
+    }
+  }
+
+  async function pickNewImage(file: File | undefined) {
+    if (!file) return;
+    try {
+      setNewImage(await uploadProductImage(file));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Image upload failed");
+    }
+  }
+
+  async function createProduct(e: React.FormEvent) {
+    e.preventDefault();
+    const slug = slugify(newName);
+    if (!newName.trim() || !slug) {
+      toast.error("Enter a product name (English letters or numbers for the link).");
+      return;
+    }
+    if (products.some((p) => p.slug === slug)) {
+      toast.error("A product with this name already exists.");
+      return;
+    }
+    setCreating(true);
+    const { error } = await supabase.from("products").insert({
+      slug,
+      name: newName.trim(),
+      name_ar: newNameAr.trim() || null,
+      description: newDesc.trim() || null,
+      price: Number.isFinite(newPrice) && newPrice >= 0 ? newPrice : 0,
+      category_id: newCategory || null,
+      image_url: newImage,
+      is_active: true,
+      is_featured: false,
+      sort_order: products.length + 1,
+    });
+    setCreating(false);
+    if (error) {
+      toast.error("Failed to create product");
+      return;
+    }
+    toast.success("Product created");
+    setNewName("");
+    setNewNameAr("");
+    setNewDesc("");
+    setNewPrice(0);
+    setNewCategory("");
+    setNewImage(null);
+    setShowNew(false);
+    refreshAll();
+  }
+
+  const inputCls =
+    "w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground";
+
+  return (
+    <section className="py-2">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="font-display text-2xl">Products & Prices ({products.length})</h2>
+        <button
+          type="button"
+          onClick={() => setShowNew((v) => !v)}
+          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs text-primary-foreground"
+        >
+          <Plus className="h-3.5 w-3.5" /> {showNew ? "Close" : "Add product"}
+        </button>
+      </div>
+      <p className="mt-1 text-xs text-muted-foreground">
+        Change prices and photos, hide products from the shop, or mark them as featured.
+      </p>
+
+      {showNew && (
+        <form onSubmit={createProduct} className="card-star mt-5 space-y-3 rounded-xl p-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <input
+              className={inputCls}
+              placeholder="Name (English)"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              maxLength={120}
+              required
+            />
+            <input
+              className={inputCls}
+              placeholder="الاسم بالعربية (اختياري)"
+              value={newNameAr}
+              onChange={(e) => setNewNameAr(e.target.value)}
+              maxLength={120}
+            />
+            <input
+              className={inputCls}
+              type="number"
+              min={0}
+              placeholder="Price (EGP)"
+              value={newPrice}
+              onChange={(e) => setNewPrice(Number(e.target.value))}
+            />
+            <select
+              className={inputCls}
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+            >
+              <option value="">No category</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <textarea
+            className={inputCls}
+            rows={3}
+            placeholder="Description"
+            value={newDesc}
+            onChange={(e) => setNewDesc(e.target.value)}
+            maxLength={2000}
+          />
+          <div className="flex flex-wrap items-center gap-3">
+            {newImage && (
+              <img src={newImage} alt="" className="h-16 w-16 rounded-lg border border-border object-cover" />
+            )}
+            <label className="cursor-pointer rounded-full border border-border px-3.5 py-1.5 text-xs hover:border-gold">
+              {newImage ? "Change image" : "Upload image"}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => pickNewImage(e.target.files?.[0])}
+              />
+            </label>
+            <button
+              type="submit"
+              disabled={creating}
+              className="ms-auto inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs text-primary-foreground disabled:opacity-50"
+            >
+              <Save className="h-3.5 w-3.5" /> {creating ? "Saving…" : "Create product"}
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div className="mt-6 space-y-3">
+        {products.map((p) => {
+          const e = edits[p.id] ?? {};
+          const price = e.price ?? p.price;
+          const active = e.is_active ?? p.is_active ?? true;
+          const featured = e.is_featured ?? p.is_featured ?? false;
+          const set = (patch: Partial<ProductRow>) =>
+            setEdits((prev) => ({ ...prev, [p.id]: { ...prev[p.id], ...patch } }));
+          return (
+            <div key={p.id} className="card-star flex flex-wrap items-center gap-3 rounded-xl p-4">
+              <img
+                src={productImage(p.slug, p.image_url)}
+                alt=""
+                className="h-14 w-14 shrink-0 rounded-lg border border-border object-cover"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-medium">{p.name}</p>
+                <p className="truncate text-xs text-muted-foreground">/{p.slug}</p>
+              </div>
+              <label className="cursor-pointer rounded-full border border-border px-3 py-1.5 text-xs hover:border-gold">
+                {uploadingId === p.id ? "Uploading…" : "Change image"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={uploadingId === p.id}
+                  onChange={(ev) => {
+                    changeImage(p.id, ev.target.files?.[0]);
+                    ev.target.value = "";
+                  }}
+                />
+              </label>
+              <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                Price
+                <input
+                  type="number"
+                  min={0}
+                  value={price}
+                  onChange={(ev) => set({ price: Number(ev.target.value) })}
+                  className="w-24 rounded-md border border-border bg-background px-2 py-1 text-sm text-foreground"
+                />
+              </label>
+              <label className="flex items-center gap-1.5 text-xs">
+                <input
+                  type="checkbox"
+                  checked={active}
+                  onChange={(ev) => set({ is_active: ev.target.checked })}
+                />
+                Visible
+              </label>
+              <label className="flex items-center gap-1.5 text-xs">
+                <input
+                  type="checkbox"
+                  checked={featured}
+                  onChange={(ev) => set({ is_featured: ev.target.checked })}
+                />
+                Featured
+              </label>
+              <button
+                type="button"
+                disabled={!edits[p.id]}
+                onClick={() => save(p.id)}
+                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-xs text-primary-foreground disabled:opacity-40"
+              >
+                <Save className="h-3.5 w-3.5" /> Save
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+type MessageRow = {
+  id: string;
+  name: string;
+  email: string;
+  subject: string | null;
+  message: string;
+  created_at: string;
+};
+
+function MessagesPanel() {
+  const { data: messages = [] } = useQuery({
+    queryKey: ["admin_messages"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("contact_messages")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as MessageRow[];
+    },
+  });
+  return (
+    <section className="py-2">
+      <h2 className="font-display text-2xl">Messages ({messages.length})</h2>
+      <div className="mt-6 space-y-3">
+        {messages.length === 0 && (
+          <p className="text-sm text-muted-foreground">No messages yet.</p>
+        )}
+        {messages.map((m) => (
+          <div key={m.id} className="card-star rounded-xl p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="font-medium">{m.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {new Date(m.created_at).toLocaleString()}
+              </p>
+            </div>
+            <a href={`mailto:${m.email}`} className="text-xs text-gold hover:underline">
+              {m.email}
+            </a>
+            {m.subject && <p className="mt-2 text-sm font-medium">{m.subject}</p>}
+            <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{m.message}</p>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

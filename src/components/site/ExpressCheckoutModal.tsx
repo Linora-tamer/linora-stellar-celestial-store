@@ -13,8 +13,12 @@ import {
 import { toast } from "sonner";
 import { formatPrice } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
-import { EGYPT_GOVERNORATES, calculateEgyptShipping } from "@/lib/egypt-shipping";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  EGYPT_GOVERNORATES,
+  calculateEgyptShipping,
+  requiresPhysicalShipping,
+} from "@/lib/egypt-shipping";
+import { orderErrorMessage, submitOrder } from "@/lib/place-order";
 import { CONTACT, type Product } from "@/lib/store";
 import { productImage } from "@/lib/product-images";
 
@@ -56,14 +60,11 @@ export function ExpressCheckoutModal({
 
   if (!isOpen || !product) return null;
 
-  const isDigital =
-    product.slug.includes("planner") ||
-    product.slug.includes("digital") ||
-    product.slug.includes("template") ||
-    product.category_id === "cat-1";
+  // Same rule the server uses to decide whether shipping applies.
+  const isDigital = !requiresPhysicalShipping([product]);
 
   const price = Number(product.price);
-  const shippingFee = isDigital ? 0 : calculateEgyptShipping(governorate, price);
+  const shippingFee = isDigital ? 0 : calculateEgyptShipping(governorate, [product]).fee;
   const total = price + shippingFee;
 
   async function handleExpressSubmit(e: React.FormEvent) {
@@ -78,32 +79,29 @@ export function ExpressCheckoutModal({
     }
 
     setSubmitting(true);
-    const orderNumber = `LS-${Date.now().toString().slice(-6)}`;
     const govObj = EGYPT_GOVERNORATES.find((g) => g.id === governorate);
 
-    const orderPayload = {
-      order_number: orderNumber,
-      customer_name: name.trim(),
-      email: `${phone.replace(/\D/g, "")}@customer.linorastellar.com`,
-      phone: phone.trim(),
-      address: isDigital ? "Digital Instant Download" : address.trim(),
-      governorate: isDigital
-        ? "Digital"
-        : govObj
-          ? isAr
-            ? govObj.nameAr
-            : govObj.nameEn
-          : governorate,
-      city: isDigital
-        ? "Instant Download"
-        : govObj
-          ? isAr
-            ? govObj.nameAr
-            : govObj.nameEn
-          : "Egypt",
+    const result = await submitOrder({
+      customer: {
+        name: name.trim(),
+        // Express checkout doesn't collect an email, so the server skips the customer email.
+        email: `${phone.replace(/\D/g, "")}@customer.linorastellar.com`,
+        phone: phone.trim(),
+        address: isDigital ? "Digital Instant Download" : address.trim(),
+        city: isDigital
+          ? "Instant Download"
+          : govObj
+            ? isAr
+              ? govObj.nameAr
+              : govObj.nameEn
+            : "Egypt",
+        governorate: isDigital ? EGYPT_GOVERNORATES[0]!.id : governorate,
+        notes: "Express 5-Second One-Page Checkout",
+      },
+      paymentMethod,
+      paymentReference: `EXPRESS-${Date.now().toString().slice(-4)}`,
       items: [
         {
-          productId: product.id,
           slug: product.slug,
           name: pick(product, "name"),
           price,
@@ -115,40 +113,33 @@ export function ExpressCheckoutModal({
           },
         },
       ],
-      subtotal: price,
-      shipping_fee: shippingFee,
-      discount_amount: 0,
-      total,
-      payment_method: paymentMethod,
-      payment_reference: `EXPRESS-${Date.now().toString().slice(-4)}`,
-      notes: "Express 5-Second One-Page Checkout",
-      status: "pending",
-    };
+    });
 
-    try {
-      const { data, error } = await supabase.from("orders").insert(orderPayload).select().single();
-      setSubmitting(false);
+    setSubmitting(false);
 
-      if (error) {
-        console.error("Express order error:", error);
-      }
-
-      setCompletedOrder({
-        ...orderPayload,
-        id: data?.id || orderNumber,
-      });
-
-      toast.success(
-        isAr
-          ? `تم تأكيد طلبك السريع بنجاح! رقم الطلب #${orderNumber}`
-          : `Express order placed! Order #${orderNumber}`,
-      );
-    } catch (err) {
-      setSubmitting(false);
-      // Fallback preview
-      setCompletedOrder(orderPayload);
-      toast.success(`Express order placed! Order #${orderNumber}`);
+    // Previously a failed save still showed "Order placed!". Now the customer is told the truth.
+    if (!result.ok) {
+      toast.error(orderErrorMessage(result.code, isAr));
+      return;
     }
+    if (result.paymentUrl) {
+      window.location.href = result.paymentUrl;
+      return;
+    }
+
+    setCompletedOrder({
+      id: result.orderNumber,
+      order_number: result.orderNumber,
+      customer_name: name.trim(),
+      phone: phone.trim(),
+      total,
+    });
+
+    toast.success(
+      isAr
+        ? `تم تأكيد طلبك السريع بنجاح! رقم الطلب #${result.orderNumber}`
+        : `Express order placed! Order #${result.orderNumber}`,
+    );
   }
 
   const displayName = pick(product, "name");

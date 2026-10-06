@@ -59,7 +59,7 @@ export function AnnouncementTicker() {
     return () => clearInterval(timer);
   }, [ANNOUNCEMENTS.length]);
 
-  const activeAnnouncement = ANNOUNCEMENTS[currentIndex];
+  const activeAnnouncement = ANNOUNCEMENTS[currentIndex] ?? ANNOUNCEMENTS[0]!;
   const Icon = activeAnnouncement.icon;
 
   const THEMES = [
@@ -75,7 +75,7 @@ export function AnnouncementTicker() {
     { id: "dawn" as const, labelEn: "Dawn", labelAr: "الفجر", icon: Sunrise, emoji: "🌅" },
   ];
 
-  const currentThemeObj = THEMES.find((t) => t.id === period) || THEMES[0];
+  const currentThemeObj = THEMES.find((t) => t.id === period) ?? THEMES[0]!;
   const CurrentIcon = currentThemeObj.icon;
 
   return (

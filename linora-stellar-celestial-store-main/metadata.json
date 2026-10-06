@@ -1,0 +1,6 @@
+{
+  "name": "Linora Stellar Celestial Store",
+  "description": "Linora Stellar: celestial navy-and-gold printables, stationery, branding and merch, designed in Egypt.",
+  "permissions": [],
+  "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

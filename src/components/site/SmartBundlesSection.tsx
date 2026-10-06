@@ -68,7 +68,9 @@ export function SmartBundlesSection() {
       price: bundle.bundlePrice,
       image: bundle.image,
       quantity: 1,
-      variant: isAr ? "باقة متكاملة موفرة" : "Complete Discounted Bundle",
+      options: {
+        variant: isAr ? "باقة متكاملة موفرة" : "Complete Discounted Bundle",
+      },
     });
     setAddedBundleId(bundle.id);
     setTimeout(() => setAddedBundleId(null), 2500);

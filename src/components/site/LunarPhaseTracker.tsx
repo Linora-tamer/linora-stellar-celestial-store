@@ -121,7 +121,7 @@ export function LunarPhaseTrackerModal({
   const current = getLunarPhase();
   const [selectedPhaseIndex, setSelectedPhaseIndex] = useState<number>(current.phaseIndex);
   const allPhases = getAllLunarPhases();
-  const activePhase = allPhases[selectedPhaseIndex];
+  const activePhase = allPhases[selectedPhaseIndex] ?? allPhases[0]!;
 
   if (!isOpen) return null;
 

@@ -1,10 +1,16 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, ShoppingBag, Palette, CircleUserRound } from "lucide-react";
+import { Home, ShoppingBag, Palette, CircleUserRound, Menu } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 
-export function MobileBottomBar({ onOpenPodStudio }: { onOpenPodStudio?: () => void }) {
+export function MobileBottomBar({
+  onOpenPodStudio,
+  onOpenMenu,
+}: {
+  onOpenPodStudio?: () => void;
+  onOpenMenu?: () => void;
+}) {
   const { count: cartCount, openDrawer } = useCart();
   const { user } = useAuth();
   const { t, lang } = useI18n();
@@ -89,22 +95,21 @@ export function MobileBottomBar({ onOpenPodStudio }: { onOpenPodStudio?: () => v
           </span>
         </Link>
 
-        {/* 5. Account / Cart */}
+        {/* 5. Essential Hamburger Menu (≡ Side Navigation) */}
         <button
           type="button"
-          onClick={openDrawer}
-          className="relative flex flex-col items-center justify-center gap-0.5 py-1 px-2 rounded-xl text-text-secondary hover:text-accent transition-all"
+          onClick={onOpenMenu}
+          className="relative flex flex-col items-center justify-center gap-0.5 py-1 px-2 rounded-xl text-text-primary hover:text-accent transition-all"
+          title={isAr ? "القائمة الجانبية ≡" : "Side Navigation ≡"}
+          aria-label={isAr ? "فتح القائمة الجانبية" : "Open Side Navigation"}
         >
-          <div className="relative">
-            <ShoppingBag className="h-4.5 w-4.5" />
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -end-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-accent px-0.5 text-[8px] font-bold text-background">
-                {cartCount}
-              </span>
-            )}
+          <div className="relative flex flex-col items-center justify-center gap-0.5">
+            <span className="block h-0.5 w-4 rounded-full bg-accent" />
+            <span className="block h-0.5 w-3 rounded-full bg-accent" />
+            <span className="block h-0.5 w-4 rounded-full bg-accent" />
           </div>
-          <span className="text-[10px] tracking-wider leading-none mt-0.5">
-            {isAr ? "السلة" : "Cart"}
+          <span className="text-[10px] tracking-wider leading-none mt-0.5 font-bold text-accent">
+            {isAr ? "القائمة ≡" : "Menu ≡"}
           </span>
         </button>
       </nav>

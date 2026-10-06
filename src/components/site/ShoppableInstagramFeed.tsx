@@ -203,18 +203,26 @@ export function ShoppableInstagramFeed() {
               </div>
 
               <div className="flex gap-2">
-                <Link
-                  to={
-                    activePost.featuredSlug === "custom-orders"
-                      ? "/custom-orders"
-                      : `/shop/${activePost.featuredSlug}`
-                  }
-                  onClick={() => setActivePost(null)}
-                  className="rounded-full bg-accent px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-background hover:brightness-110 shadow-md transition-all flex items-center gap-1.5"
-                >
-                  <ShoppingBag className="h-3.5 w-3.5" />
-                  <span>{isAr ? "اطلبي الآن" : "Shop This Piece"}</span>
-                </Link>
+                {activePost.featuredSlug === "custom-orders" ? (
+                  <Link
+                    to="/custom-orders"
+                    onClick={() => setActivePost(null)}
+                    className="rounded-full bg-accent px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-background hover:brightness-110 shadow-md transition-all flex items-center gap-1.5"
+                  >
+                    <ShoppingBag className="h-3.5 w-3.5" />
+                    <span>{isAr ? "اطلبي الآن" : "Shop This Piece"}</span>
+                  </Link>
+                ) : (
+                  <Link
+                    to="/shop/$slug"
+                    params={{ slug: activePost.featuredSlug || "custom-orders" }}
+                    onClick={() => setActivePost(null)}
+                    className="rounded-full bg-accent px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-background hover:brightness-110 shadow-md transition-all flex items-center gap-1.5"
+                  >
+                    <ShoppingBag className="h-3.5 w-3.5" />
+                    <span>{isAr ? "اطلبي الآن" : "Shop This Piece"}</span>
+                  </Link>
+                )}
                 <button
                   type="button"
                   onClick={() => setActivePost(null)}

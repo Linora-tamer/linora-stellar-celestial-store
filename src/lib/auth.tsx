@@ -10,16 +10,18 @@ export function useAuth() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(({ data }: { data: { session: Session | null } }) => {
       setSession(data.session);
       setLoading(false);
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((event, next) => {
-      setSession(next);
-      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
-        queryClient.invalidateQueries({ queryKey: ["role"] });
-      }
-    });
+    const { data: sub } = supabase.auth.onAuthStateChange(
+      (event: string, next: Session | null) => {
+        setSession(next);
+        if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
+          queryClient.invalidateQueries({ queryKey: ["role"] });
+        }
+      },
+    );
     return () => sub.subscription.unsubscribe();
   }, [queryClient]);
 
@@ -40,12 +42,11 @@ export function useAuth() {
           .maybeSingle();
         if (data) return true;
       }
-      // If no Supabase credentials are configured, grant owner access so the store owner can test and verify in preview
-      const hasSupabase =
-        typeof process !== "undefined" &&
-        (process.env["SUPABASE_URL"] ||
-          (typeof import.meta !== "undefined" && import.meta.env?.["VITE_SUPABASE_URL"]));
-      if (!hasSupabase) {
+      // Preview-only convenience: when no Supabase credentials are configured at all
+      // (in-memory mock store), let the owner UI be tested. Never applies once a real
+      // backend is configured. Real protection is the database's owner-only policies.
+      const hasSupabase = Boolean(import.meta.env?.["VITE_SUPABASE_URL"]);
+      if (!hasSupabase && import.meta.env?.DEV) {
         return true;
       }
       return false;

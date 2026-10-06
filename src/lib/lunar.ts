@@ -143,7 +143,7 @@ export function getLunarPhase(date: Date = new Date()): LunarPhaseInfo {
   const normalizedAge = (cycleFraction + segment / 2) % SYNODIC_MONTH;
   const phaseIndex = Math.min(7, Math.floor(normalizedAge / segment));
 
-  const data = LUNAR_PHASES_DATA[phaseIndex];
+  const data = LUNAR_PHASES_DATA[phaseIndex] ?? LUNAR_PHASES_DATA[0]!;
 
   // Days until next full moon (age approx 14.765 days)
   const fullMoonAge = SYNODIC_MONTH / 2;

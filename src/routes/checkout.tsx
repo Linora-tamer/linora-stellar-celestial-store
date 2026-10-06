@@ -5,7 +5,6 @@ import { Copy, Check, ShieldCheck, Truck, Sparkles, MessageCircle } from "lucide
 import { toast } from "sonner";
 
 import { ShippingZonesCard } from "@/components/site/ShippingZonesCard";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { formatPrice, useCart } from "@/lib/cart";
 import {
@@ -14,6 +13,7 @@ import {
   requiresPhysicalShipping,
 } from "@/lib/egypt-shipping";
 import { useI18n } from "@/lib/i18n";
+import { orderErrorMessage, submitOrder } from "@/lib/place-order";
 import { CONTACT, paymentMethodsQuery } from "@/lib/store";
 
 export const Route = createFileRoute("/checkout")({
@@ -40,7 +40,7 @@ const LOCAL_STORAGE_PROFILE_KEY = "linora_customer_profile";
 const LOCAL_STORAGE_ADDRESS_KEY = "linora_customer_address";
 
 function Checkout() {
-  const { items, total, clear } = useCart();
+  const { items, total, finalTotal, discountAmount, coupon, clear } = useCart();
   const { user } = useAuth();
   const { t, pick, lang } = useI18n();
   const isAr = lang === "ar";
@@ -97,7 +97,7 @@ function Checkout() {
   const isPhysical = requiresPhysicalShipping(items);
   const selectedGov = getGovernorate(selectedGovId);
   const shippingFee = isPhysical ? (selectedGov ? selectedGov.fee : 0) : 0;
-  const grandTotal = total + shippingFee;
+  const grandTotal = finalTotal + shippingFee;
 
   const chosen = active.find((m) => m.code === method) ?? active[0];
   const selectedCode = method || chosen?.code || "vodafone_cash";
@@ -136,9 +136,6 @@ function Checkout() {
 
     setSubmitting(true);
 
-    const govRecord = selectedGov;
-    const govName = govRecord ? `${govRecord.nameEn} / ${govRecord.nameAr}` : selectedGovId;
-
     // Save profile locally for future checkouts
     if (typeof window !== "undefined") {
       try {
@@ -163,43 +160,46 @@ function Checkout() {
       }
     }
 
-    const { data, error } = await supabase
-      .from("orders")
-      .insert({
-        user_id: user?.id ?? null,
-        customer_name: name.trim(),
+    const result = await submitOrder({
+      customer: {
+        name: name.trim(),
         email: email.trim(),
         phone: phone.trim(),
-        alt_phone: altPhone.trim() || null,
-        national_id: null,
-        address: address.trim(),
-        city: city.trim(),
-        governorate: govName || null,
-        postal_code: postalCode.trim() || null,
-        notes: notes.trim() || null,
-        payment_method: selectedCode,
-        payment_reference: refValue || null,
-        total: grandTotal,
-        items: items.map((i) => ({
-          name: i.name,
-          slug: i.slug,
-          price: i.price,
-          quantity: i.quantity,
-          options: i.options ?? {},
-        })),
-      })
-      .select("order_number")
-      .single();
+        altPhone: altPhone.trim() || undefined,
+        address: address.trim() || (isPhysical ? "" : "Digital Instant Download"),
+        city: city.trim() || (isPhysical ? "" : "Instant Download"),
+        governorate: selectedGovId || "cairo",
+        postalCode: postalCode.trim() || undefined,
+        notes: notes.trim() || undefined,
+      },
+      paymentMethod: selectedCode,
+      paymentReference: refValue || undefined,
+      couponCode: coupon?.code,
+      items: items.map((i) => ({
+        name: i.name,
+        slug: i.slug,
+        price: i.price,
+        quantity: i.quantity,
+        options: i.options ?? {},
+      })),
+    });
 
     setSubmitting(false);
 
-    if (error || !data) {
-      toast.error(t("checkout.error"));
+    if (!result.ok) {
+      toast.error(orderErrorMessage(result.code, isAr));
+      return;
+    }
+
+    // Card: the cart is kept until the payment is confirmed (the order page clears it),
+    // so a customer who abandons the payment page doesn't lose their basket.
+    if (result.paymentUrl) {
+      window.location.href = result.paymentUrl;
       return;
     }
 
     clear();
-    navigate({ to: "/order/$number", params: { number: data.order_number } });
+    navigate({ to: "/order/$number", params: { number: result.orderNumber } });
   }
 
   if (items.length === 0) {
@@ -550,6 +550,17 @@ function Checkout() {
               <span className="text-muted-foreground">{t("cart.subtotal")}</span>
               <span className="font-medium">{formatPrice(total)}</span>
             </div>
+
+            {discountAmount > 0 && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">
+                  {isAr ? "خصم" : "Discount"} {coupon ? `(${coupon.code})` : ""}
+                </span>
+                <span className="font-medium text-emerald-400">
+                  − {formatPrice(discountAmount)}
+                </span>
+              </div>
+            )}
 
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">{t("checkout.shipping")}</span>

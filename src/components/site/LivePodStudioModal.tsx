@@ -95,10 +95,10 @@ export function LivePodStudioModal({
   const { add, openDrawer } = useCart();
 
   const [selectedProductId, setSelectedProductId] = useState(defaultProduct);
-  const activeProduct = POD_PRODUCTS.find((p) => p.id === selectedProductId) || POD_PRODUCTS[0];
+  const activeProduct = POD_PRODUCTS.find((p) => p.id === selectedProductId) ?? POD_PRODUCTS[0]!;
 
-  const [selectedColor, setSelectedColor] = useState(activeProduct.colors[0]);
-  const [selectedSize, setSelectedSize] = useState(activeProduct.sizes[0]);
+  const [selectedColor, setSelectedColor] = useState(activeProduct.colors[0]!);
+  const [selectedSize, setSelectedSize] = useState(activeProduct.sizes[0] || "Standard");
   const [uploadedArtwork, setUploadedArtwork] = useState<string | null>(null);
   const [designScale, setDesignScale] = useState(85);
   const [designOffsetY, setDesignOffsetY] = useState(0);
@@ -132,7 +132,9 @@ export function LivePodStudioModal({
       price: activeProduct.basePrice,
       image: uploadedArtwork || heroStellar,
       quantity: 1,
-      variant: `${selectedColor.nameEn} / ${selectedSize}${customText ? ` • "${customText}"` : ""}`,
+      options: {
+        variant: `${selectedColor.nameEn} / ${selectedSize}${customText ? ` • "${customText}"` : ""}`,
+      },
     });
     toast.success(
       isAr ? "تمت إضافة القطعة المخصصة لسلة التسوق!" : "Custom merchandise added to cart!",
@@ -292,8 +294,8 @@ export function LivePodStudioModal({
                       type="button"
                       onClick={() => {
                         setSelectedProductId(p.id);
-                        setSelectedColor(p.colors[0]);
-                        setSelectedSize(p.sizes[0]);
+                        setSelectedColor(p.colors[0]!);
+                        setSelectedSize(p.sizes[0] || "Standard");
                       }}
                       className={`flex items-center gap-2 p-2.5 rounded-2xl border text-start transition-all ${
                         isSel

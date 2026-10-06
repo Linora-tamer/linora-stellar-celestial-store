@@ -1,5 +1,9 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
+import { VALID_COUPONS, couponDiscount, type PromoCoupon } from "./coupons";
+
+export type { PromoCoupon };
+
 export type CartItem = {
   id: string;
   productId: string;
@@ -9,13 +13,6 @@ export type CartItem = {
   image?: string | null;
   quantity: number;
   options?: Record<string, string>;
-};
-
-export type PromoCoupon = {
-  code: string;
-  discountPercent?: number;
-  discountFixed?: number;
-  label: string;
 };
 
 type CartContextValue = {
@@ -41,12 +38,6 @@ type CartContextValue = {
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "linora-cart";
 const COUPON_STORAGE_KEY = "linora-cart-coupon";
-
-const VALID_COUPONS: Record<string, PromoCoupon> = {
-  STELLAR10: { code: "STELLAR10", discountPercent: 10, label: "10% off Celestial Drop" },
-  WELCOME50: { code: "WELCOME50", discountFixed: 50, label: "50 EGP Welcome Gift" },
-  NORA20: { code: "NORA20", discountPercent: 20, label: "20% VIP Star Discount" },
-};
 
 function keyFor(item: Omit<CartItem, "id">) {
   return [item.slug, JSON.stringify(item.options ?? {})].join("|");
@@ -85,14 +76,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const value = useMemo<CartContextValue>(() => {
     const subtotal = items.reduce((sum, c) => sum + c.quantity * c.price, 0);
 
-    let discountAmount = 0;
-    if (coupon) {
-      if (coupon.discountPercent) {
-        discountAmount = Math.round((subtotal * coupon.discountPercent) / 100);
-      } else if (coupon.discountFixed) {
-        discountAmount = Math.min(subtotal, coupon.discountFixed);
-      }
-    }
+    const discountAmount = couponDiscount(subtotal, coupon);
     const finalTotal = Math.max(0, subtotal - discountAmount);
 
     return {

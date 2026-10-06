@@ -35,10 +35,11 @@ export function CosmicOrbitNavigator({
   onOpenCustomizer,
 }: CosmicNavigationProps) {
   const { lang } = useI18n();
-  const { period, activeFour, localTime } = useTheme();
+  const isAr = lang === "ar";
+  const { period, config, localTime } = useTheme();
+  const activeFour = isAr ? config.nameAr : config.name;
   const router = useRouterState();
   const currentPath = router.location.pathname;
-  const isAr = lang === "ar";
   const lunar = getLunarPhase();
 
   // Close on Escape
@@ -167,7 +168,7 @@ export function CosmicOrbitNavigator({
             {/* Astronomical Status Badge */}
             <div className="hidden md:flex items-center gap-2 rounded-xl border border-border/80 bg-surface-elevated/70 px-3 py-1.5 text-[11px] text-text-secondary font-mono">
               <span className="text-accent">{lunar.emoji}</span>
-              <span>{isAr ? lunar.arabicName : lunar.name}</span>
+              <span>{isAr ? lunar.nameAr : lunar.name}</span>
               <span className="text-border">|</span>
               <span className="text-accent font-semibold uppercase">{activeFour}</span>
             </div>

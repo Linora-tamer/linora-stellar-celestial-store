@@ -114,7 +114,8 @@ export function MegaMenu({ type, isOpen, onClose }: MegaMenuProps) {
 
             <div className="grid grid-cols-2 gap-3 pt-1">
               <Link
-                to="/shop/pink-floral-label"
+                to="/shop/$slug"
+                params={{ slug: "pink-floral-label" }}
                 onClick={onClose}
                 className="group relative overflow-hidden rounded-xl border border-border bg-surface-elevated p-3 transition-transform hover:-translate-y-1"
               >
@@ -132,7 +133,8 @@ export function MegaMenu({ type, isOpen, onClose }: MegaMenuProps) {
               </Link>
 
               <Link
-                to="/shop/stellar-digital-planner"
+                to="/shop/$slug"
+                params={{ slug: "stellar-digital-planner" }}
                 onClick={onClose}
                 className="group relative overflow-hidden rounded-xl border border-border bg-surface-elevated p-3 transition-transform hover:-translate-y-1"
               >

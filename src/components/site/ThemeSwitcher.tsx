@@ -3,20 +3,36 @@ import { Moon, Sun, Sunrise, Sunset, Clock, Palette } from "lucide-react";
 import { THEMES, THEME_LABELS, useTheme, type Theme } from "@/lib/theme";
 import { useI18n } from "@/lib/i18n";
 
-const THEME_ICONS: Record<Theme, typeof Moon> = {
+const THEME_ICONS: Partial<Record<Theme, typeof Moon>> = {
   night: Moon,
+  midnight: Moon,
   dawn: Sunrise,
+  sunrise: Sunrise,
   morning: Sun,
-  day: Sun,
+  forenoon: Sun,
+  noon: Sun,
+  afternoon: Sun,
+  daylight: Sun,
   dusk: Sunset,
+  sunset: Sunset,
+  twilight: Moon,
+  evening: Moon,
 };
 
-const THEME_DESCRIPTIONS: Record<Theme, { en: string; ar: string }> = {
+const THEME_DESCRIPTIONS: Partial<Record<Theme, { en: string; ar: string }>> = {
   night: { en: "Midnight Navy & Gold", ar: "سماء الليل الكحلية والتذهيب" },
+  midnight: { en: "Midnight Navy & Gold", ar: "سماء الليل الكحلية والتذهيب" },
   dawn: { en: "Violet Twilight & Rose", ar: "شفق الفجر البنفسجي الوردي" },
+  sunrise: { en: "Violet Twilight & Rose", ar: "شفق الفجر البنفسجي الوردي" },
   morning: { en: "Golden Hour & Azure", ar: "الصباح الفاتح والشمس المشرقة" },
-  day: { en: "Ivory Paper & Ink", ar: "ورق عاجي نقي وحبر كحلي" },
+  forenoon: { en: "Golden Hour & Azure", ar: "الصباح الفاتح والشمس المشرقة" },
+  noon: { en: "Ivory Paper & Ink", ar: "ورق عاجي نقي وحبر كحلي" },
+  afternoon: { en: "Ivory Paper & Ink", ar: "ورق عاجي نقي وحبر كحلي" },
+  daylight: { en: "Ivory Paper & Ink", ar: "ورق عاجي نقي وحبر كحلي" },
   dusk: { en: "Amber Sunset & Indigo", ar: "غروب عسلي دافئ ونغمات نيلية" },
+  sunset: { en: "Amber Sunset & Indigo", ar: "غروب عسلي دافئ ونغمات نيلية" },
+  twilight: { en: "Celestial Twilight", ar: "الغسق الفلكي النجمي" },
+  evening: { en: "Starlight Evening", ar: "المساء النجمي الهادئ" },
 };
 
 export function ThemeSwitcher() {
@@ -92,9 +108,9 @@ export function ThemeSwitcher() {
 
             {/* Individual Celestial Themes */}
             {THEMES.map((tKey) => {
-              const Icon = THEME_ICONS[tKey];
+              const Icon = THEME_ICONS[tKey] || Moon;
               const isSelected = !auto && theme === tKey;
-              const desc = THEME_DESCRIPTIONS[tKey];
+              const desc = THEME_DESCRIPTIONS[tKey] || { en: tKey, ar: tKey };
 
               return (
                 <button

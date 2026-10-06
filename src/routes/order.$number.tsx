@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Check,
   Copy,
@@ -18,7 +18,9 @@ import { toast } from "sonner";
 
 import { Star } from "@/components/site/Star";
 import { supabase } from "@/integrations/supabase/client";
-import { formatPrice } from "@/lib/cart";
+import { formatPrice, useCart } from "@/lib/cart";
+import { hasBackend } from "@/lib/backend";
+import { lookupOrder } from "@/lib/orders.functions";
 import { useI18n } from "@/lib/i18n";
 import { CONTACT } from "@/lib/store";
 import { productImage } from "@/lib/product-images";
@@ -44,6 +46,7 @@ type OrderData = {
   status: string;
   payment_method: string;
   payment_reference?: string | null;
+  payment_status?: string | null;
   items?: OrderItem[];
   created_at: string;
 };
@@ -70,46 +73,41 @@ function OrderConfirmed() {
   const isAr = lang === "ar";
   const [copiedSummary, setCopiedSummary] = useState(false);
 
-  // Fetch real or simulated order
+  const { clear } = useCart();
+
+  // Real backend: guests can't read the orders table (RLS), so the lookup goes through a
+  // server function keyed by the unguessable order number. Preview mode reads the mock store.
   const { data: order, isLoading } = useQuery({
     queryKey: ["order", number],
     queryFn: async (): Promise<OrderData | null> => {
+      if (hasBackend) {
+        const { order } = await lookupOrder({ data: { orderNumber: number } });
+        return (order as unknown as OrderData | null) ?? null;
+      }
       const { data, error } = await supabase
         .from("orders")
         .select("*")
         .eq("order_number", number)
         .maybeSingle();
 
-      if (error || !data) {
-        // Fallback for immediate preview if network/storage is empty
-        return {
-          id: "temp-order",
-          order_number: number,
-          customer_name: "Valued Celestial Guest",
-          email: "guest@example.com",
-          phone: "010xxxxxxxx",
-          address: "Delivery destination across Egypt",
-          city: "Cairo",
-          governorate: "Cairo / القاهرة",
-          total: 450,
-          status: "pending",
-          payment_method: "vodafone_cash",
-          payment_reference: "Pending Verification",
-          created_at: new Date().toISOString(),
-          items: [
-            {
-              name: "Stellar Digital Life Planner",
-              slug: "stellar-digital-planner",
-              price: 250,
-              quantity: 1,
-              options: { Edition: "Celestial Navy & Gold" },
-            },
-          ],
-        };
-      }
+      if (error || !data) return null;
       return data as unknown as OrderData;
     },
+    // After the card page the gateway callback can arrive a few seconds later: keep checking.
+    refetchInterval: (query) =>
+      query.state.data?.payment_method === "card" && query.state.data?.payment_status === "pending"
+        ? 4000
+        : false,
   });
+
+  const isCard = order?.payment_method === "card";
+  const paymentStatus = order?.payment_status ?? null;
+
+  // Card orders keep the cart until the payment is confirmed.
+  useEffect(() => {
+    if (isCard && paymentStatus === "paid") clear();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCard, paymentStatus]);
 
   const items = order?.items ?? [];
 
@@ -175,11 +173,7 @@ PRINTING RECOMMENDATIONS:
 - Printer Settings: "Highest Quality" / "Scale: 100%".
 - Color Mode: CMYK for professional press or rich RGB for home inkjet.
 
-CANVA EDITABLE TEMPLATE ACCESS:
-Use your private Linora Stellar member template link:
-https://canva.com/design/linora-stellar-${encodeURIComponent(number)}
-
-NEED ASSISTANCE?
+YOUR FINAL FILES:\nNora sends your final print files and editable templates by email or WhatsApp once your payment is confirmed. Quote order #${number} when you message her.\n\nNEED ASSISTANCE?
 WhatsApp: ${CONTACT.whatsapp}
 Email: ${CONTACT.email}
 Instagram: @linora.stellar
@@ -197,6 +191,36 @@ Instagram: @linora.stellar
     toast.success(isAr ? `جارِ تنزيل ملف "${itemName}"` : `Downloading "${itemName}"`);
   }
 
+  if (isLoading) {
+    return <div className="mx-auto max-w-3xl px-4 py-20 text-sm text-muted-foreground">…</div>;
+  }
+
+  // Guests can't read their order back (database privacy rules), so show a simple
+  // confirmation with only what we actually know: the order number.
+  if (!order) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-24 text-center">
+        <h1 className="font-display text-4xl">{t("order.thankYou")}</h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          {isAr
+            ? `رقم طلبك #${number}. احتفظي بالرقم لتتبع الطلب، وتواصلي معنا على واتساب لتأكيد الدفع.`
+            : `Your order number is #${number}. Keep it to track your order, and message us on WhatsApp to confirm payment.`}
+        </p>
+        <div className="mt-6 flex justify-center gap-3">
+          <Link
+            to="/track"
+            className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"
+          >
+            {isAr ? "تتبع الطلب" : "Track order"}
+          </Link>
+          <Link to="/shop" className="rounded-md border border-border px-4 py-2 text-sm">
+            {isAr ? "متابعة التسوق" : "Continue shopping"}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-14 lg:px-8">
       {/* Top Hero Confirmation Banner */}
@@ -205,7 +229,13 @@ Instagram: @linora.stellar
           <Star className="h-7 w-7 text-gold fill-gold/30" />
         </div>
         <p className="text-xs uppercase tracking-[0.3em] text-gold font-medium">
-          {isAr ? "تم استلام طلبك بنجاح" : "Order Successfully Placed"}
+          {isCard && paymentStatus !== "paid"
+            ? isAr
+              ? "تم استلام طلبك — في انتظار الدفع"
+              : "Order Received — Awaiting Payment"
+            : isAr
+              ? "تم استلام طلبك بنجاح"
+              : "Order Successfully Placed"}
         </p>
         <h1 className="mt-2 font-display text-4xl sm:text-5xl">{t("order.thankYou")}</h1>
         <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
@@ -216,7 +246,32 @@ Instagram: @linora.stellar
           <span>#{number}</span>
         </div>
 
-        {/* 1-Click WhatsApp Confirmation Action Box */}
+        {isCard && (
+          <div
+            className={`mx-auto mt-6 max-w-2xl rounded-xl border p-4 text-sm ${
+              paymentStatus === "paid"
+                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                : paymentStatus === "failed"
+                  ? "border-rose-500/40 bg-rose-500/10 text-rose-300"
+                  : "border-gold/40 bg-gold/10 text-gold"
+            }`}
+          >
+            {paymentStatus === "paid"
+              ? isAr
+                ? "✓ تم استلام الدفع بالبطاقة. طلبك مؤكد."
+                : "✓ Card payment received. Your order is confirmed."
+              : paymentStatus === "failed"
+                ? isAr
+                  ? "لم تكتمل عملية الدفع ولم يتم خصم أي مبلغ. يمكنك إجراء طلب جديد أو التواصل معنا عبر واتساب."
+                  : "The payment didn't go through and nothing was charged. Place a new order or message us on WhatsApp."
+                : isAr
+                  ? "جارٍ تأكيد الدفع… سيتم تحديث هذه الصفحة تلقائياً."
+                  : "Confirming your payment… this page updates automatically."}
+          </div>
+        )}
+
+        {/* 1-Click WhatsApp Confirmation Action Box (manual payments only) */}
+        {!isCard && (
         <div className="mt-8 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-5 sm:p-6 text-start max-w-2xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -267,6 +322,7 @@ Instagram: @linora.stellar
             </div>
           </div>
         </div>
+        )}
       </div>
 
       <div className="mt-10 grid gap-8 md:grid-cols-[1fr_320px]">
@@ -283,7 +339,7 @@ Instagram: @linora.stellar
                   </h2>
                 </div>
                 <span className="rounded-full bg-gold/20 px-2.5 py-0.5 text-[11px] font-semibold text-gold">
-                  {isAr ? "جاهز للتنزيل" : "Ready to Download"}
+                  {isAr ? "دليل الطباعة" : "Printing guide"}
                 </span>
               </div>
 

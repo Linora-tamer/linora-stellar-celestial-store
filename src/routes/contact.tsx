@@ -5,6 +5,8 @@ import { Mail, MessageCircle, Instagram, Linkedin, CheckCircle2, ArrowRight } fr
 
 import { Star } from "@/components/site/Star";
 import { supabase } from "@/integrations/supabase/client";
+import { hasBackend } from "@/lib/backend";
+import { submitContactMessage } from "@/lib/contact.functions";
 import { CONTACT } from "@/lib/store";
 import { useI18n } from "@/lib/i18n";
 
@@ -43,20 +45,35 @@ function Contact() {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     setBusy(true);
-    const { error } = await supabase.from("contact_messages").insert({
+    const payload = {
       name: String(form.get("name") ?? "")
         .trim()
         .slice(0, 100),
       email: String(form.get("email") ?? "")
         .trim()
         .slice(0, 255),
-      subject: String(form.get("subject") ?? "").slice(0, 150) || null,
+      subject: String(form.get("subject") ?? "").trim().slice(0, 150) || undefined,
       message: String(form.get("message") ?? "")
         .trim()
         .slice(0, 2000),
-    });
+    };
+
+    // Real backend: the server saves the message AND emails Nora. Preview mode: mock store only.
+    let failed = false;
+    if (hasBackend) {
+      try {
+        failed = !(await submitContactMessage({ data: payload })).ok;
+      } catch {
+        failed = true;
+      }
+    } else {
+      const { error: mockError } = await supabase
+        .from("contact_messages")
+        .insert({ ...payload, subject: payload.subject ?? null });
+      failed = Boolean(mockError);
+    }
     setBusy(false);
-    if (error) {
+    if (failed) {
       toast.error(
         isAr
           ? "تعذر إرسال الرسالة، يمكنك التواصل معنا مباشرة عبر واتساب."

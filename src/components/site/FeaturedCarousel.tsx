@@ -117,18 +117,7 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        toggleWishlist({
-                          productId: product.id,
-                          slug: product.slug,
-                          name: displayName,
-                          price: Number(product.price),
-                          image: product.image_url,
-                        });
-                        toast.success(
-                          inWishlist
-                            ? `${displayName} removed from wishlist`
-                            : `${displayName} added to wishlist!`,
-                        );
+                        toggleWishlist(product);
                       }}
                       className="absolute end-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-background/80 text-text-primary backdrop-blur-md transition-colors hover:text-rose-500"
                       aria-label="Toggle wishlist"
@@ -202,7 +191,7 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
                         className="inline-flex items-center gap-2 rounded-full border border-accent/80 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-accent hover:bg-accent/10 transition-colors"
                       >
                         <ShoppingBag className="h-3.5 w-3.5" />
-                        <span>{t("product.add")}</span>
+                        <span>{isAr ? "إضافة للسلة" : "Add to Cart"}</span>
                       </button>
                     </div>
                   </div>

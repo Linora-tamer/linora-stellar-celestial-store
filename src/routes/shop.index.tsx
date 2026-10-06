@@ -73,7 +73,7 @@ function Shop() {
     const counts: Record<string, number> = { all: 0 };
     products.forEach((p) => {
       if (!p.is_active) return;
-      counts.all = (counts.all ?? 0) + 1;
+      counts["all"] = (counts["all"] ?? 0) + 1;
       if (p.category_id) {
         counts[p.category_id] = (counts[p.category_id] ?? 0) + 1;
       }
@@ -271,7 +271,7 @@ function Shop() {
           <span
             className={`text-[10px] px-1.5 py-0.2 rounded-full ${!category ? "bg-gold/25 text-gold" : "bg-muted text-muted-foreground"}`}
           >
-            {categoryCounts.all ?? products.length}
+            {categoryCounts["all"] ?? products.length}
           </span>
         </Link>
 

@@ -84,7 +84,7 @@ export function UserAccountDropdown() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-semibold text-text-primary truncate">
-                        {user.user_metadata?.full_name || user.email?.split("@")[0]}
+                        {user.user_metadata?.["full_name"] || user.email?.split("@")[0]}
                       </p>
                       <p className="text-[10px] text-text-secondary truncate">{user.email}</p>
                     </div>

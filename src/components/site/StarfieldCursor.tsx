@@ -205,6 +205,7 @@ export function StarfieldCursor() {
 
         for (let i = sparks.length - 1; i >= 0; i--) {
           const sp = sparks[i];
+          if (!sp) continue;
           sp.x += sp.vx;
           sp.y += sp.vy;
           sp.alpha -= sp.decay;

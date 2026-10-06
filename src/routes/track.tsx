@@ -18,6 +18,8 @@ import {
 import { Star } from "@/components/site/Star";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/lib/cart";
+import { hasBackend } from "@/lib/backend";
+import { trackOrder } from "@/lib/orders.functions";
 import { useI18n } from "@/lib/i18n";
 import { CONTACT } from "@/lib/store";
 
@@ -88,7 +90,24 @@ function TrackPage() {
       const q = activeQuery.trim().toUpperCase();
       const phoneQ = activeQuery.trim();
 
-      // Check by order_number
+      // Real backend: guests can't read the orders table directly, so go through the server.
+      // An order number returns the full order; a phone number returns only the latest
+      // order's status (no address / items / email of someone else's order).
+      if (hasBackend) {
+        const { order: found, partial } = await trackOrder({ data: { query: phoneQ } });
+        if (!found) return null;
+        if (partial) {
+          return {
+            customer_name: "—",
+            email: "",
+            phone: phoneQ,
+            ...(found as object),
+          } as unknown as TrackedOrder;
+        }
+        return found as unknown as TrackedOrder;
+      }
+
+      // Preview mode (in-memory mock store)
       const { data: byOrder } = await supabase
         .from("orders")
         .select("*")
@@ -97,7 +116,6 @@ function TrackPage() {
 
       if (byOrder) return byOrder as TrackedOrder;
 
-      // Or check by phone
       const { data: byPhone } = await supabase
         .from("orders")
         .select("*")

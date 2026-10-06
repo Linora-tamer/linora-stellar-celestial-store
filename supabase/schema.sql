@@ -1,3 +1,5 @@
+-- NOTE: after running this file, also run supabase/migrations/0003_integrations.sql (order_number default, payment columns, storage bucket, hardened owner check).
+-- NOTE: this file does not create a profile row on signup; the drizzle migration 0000 does (handle_new_user trigger).
 -- =========================================================================
 -- LINORA STELLAR — PRODUCTION SUPABASE DATABASE SCHEMA & RLS POLICIES
 -- =========================================================================

@@ -631,10 +631,10 @@ export function CelestialControlsHubModal({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  isPinned?: boolean;
-  onTogglePin?: () => void;
-  isCollapsed?: boolean;
-  onToggleCollapse?: () => void;
+  isPinned?: boolean | undefined;
+  onTogglePin?: (() => void) | undefined;
+  isCollapsed?: boolean | undefined;
+  onToggleCollapse?: (() => void) | undefined;
 }) {
   const { period, config, auto, localTime, setPeriod, resetToAuto } = useTheme();
   const { lang } = useI18n();

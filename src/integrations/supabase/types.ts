@@ -185,6 +185,12 @@ export type Database = {
           status: string;
           total: number;
           user_id: string | null;
+          notified_at: string | null;
+          paid_at: string | null;
+          payment_provider: string | null;
+          payment_provider_ref: string | null;
+          payment_status: string;
+          updated_at: string | null;
         };
         Insert: {
           address: string;
@@ -206,6 +212,12 @@ export type Database = {
           status?: string;
           total?: number;
           user_id?: string | null;
+          notified_at?: string | null;
+          paid_at?: string | null;
+          payment_provider?: string | null;
+          payment_provider_ref?: string | null;
+          payment_status?: string;
+          updated_at?: string | null;
         };
         Update: {
           address?: string;
@@ -227,6 +239,12 @@ export type Database = {
           status?: string;
           total?: number;
           user_id?: string | null;
+          notified_at?: string | null;
+          paid_at?: string | null;
+          payment_provider?: string | null;
+          payment_provider_ref?: string | null;
+          payment_status?: string;
+          updated_at?: string | null;
         };
         Relationships: [];
       };
@@ -488,6 +506,10 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      is_store_owner: {
+        Args: Record<PropertyKey, never>;
+        Returns: boolean;
+      };
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"];

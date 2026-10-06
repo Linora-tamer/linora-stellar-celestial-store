@@ -1,149 +1,57 @@
-import { GoogleGenAI } from "@google/genai";
+// Client-safe AI helpers.
+//
+// The Gemini API key and the SDK now live on the server only (see gemini.server.ts and
+// ai.functions.ts). These wrappers keep the original function names/signatures, call the
+// server functions, and fall back to the built-in canned answers when the server has no
+// key, is unreachable, or rate-limits the caller.
+import {
+  askOrderingAssistant,
+  createAdminSummary,
+  createCreativeBrief,
+} from "./ai.functions";
 
-let aiClient: GoogleGenAI | null = null;
-
-function getAIClient(): GoogleGenAI | null {
-  if (typeof process === "undefined") return null;
-  const apiKey =
-    process.env["GEMINI_API_KEY"] ||
-    process.env["VITE_GEMINI_API_KEY"] ||
-    (typeof import.meta !== "undefined" && import.meta.env?.["VITE_GEMINI_API_KEY"]);
-
-  if (!apiKey) {
-    // If running in AI Studio environment without explicit key, SDK default can still resolve
-    try {
-      if (!aiClient) aiClient = new GoogleGenAI();
-      return aiClient;
-    } catch {
-      return null;
-    }
-  }
-
-  if (!aiClient) {
-    aiClient = new GoogleGenAI({ apiKey });
-  }
-  return aiClient;
-}
+type Lang = "en" | "ar";
 
 export async function askGeminiOrderingAssistant(
   conversation: Array<{ role: "user" | "model"; text: string }>,
-  lang: "en" | "ar" = "en",
+  lang: Lang = "en",
 ) {
-  const ai = getAIClient();
-
-  const systemInstruction = `
-You are the AI Design Ordering Assistant for "Linora Stellar" (founded by art director Nora Tamer in Egypt).
-Linora Stellar specializes in celestial navy-and-gold custom branding, bespoke stationery, luxury wedding invitations, digital planners, and school packs.
-Your task:
-1. Warmly chat with clients seeking design services.
-2. Ask 2-3 concise clarifying questions if needed (business name, vibe/style, required assets like Logo vs Full Identity vs Packaging, target audience, deadline, budget).
-3. Recommend one of Linora Stellar's 4 packages:
-   - "Celestial Logo Suite" (1,500 – 2,500 EGP / ~$50)
-   - "Full Brand Identity & Guidelines" (4,000 – 7,500 EGP / ~$150)
-   - "Bespoke Stationery & Wedding Suite" (2,000 – 4,000 EGP / ~$80)
-   - "Custom Digital Planner & Canva Kit" (1,200 – 2,500 EGP / ~$45)
-4. When sufficient details are given, output a structured JSON block at the end of your response inside \`\`\`json { ... } \`\`\` with:
-   {
-     "readyToOrder": true,
-     "packageTitle": "...",
-     "estimatedPrice": "...",
-     "turnaround": "...",
-     "clientName": "...",
-     "briefSummary": "...",
-     "recommendedColors": ["#...", "#..."]
-   }
-Language: Respond in ${lang === "ar" ? "fluent, elegant, friendly Egyptian/Modern Arabic" : "warm, poetic, and professional English"}.
-Always keep responses concise, inspiring, and easy to read.
-`;
-
-  if (!ai) {
-    // Elegant client-side fallback if Gemini key is not populated
-    const lastUserMsg = conversation.filter((m) => m.role === "user").pop()?.text || "";
-    return getFallbackResponse(lastUserMsg, lang);
-  }
-
+  const lastUserMsg = conversation.filter((m) => m.role === "user").pop()?.text || "";
   try {
-    const formattedContents = conversation.map((c) => ({
-      role: c.role === "user" ? ("user" as const) : ("model" as const),
-      parts: [{ text: c.text }],
-    }));
-
-    const response = await ai.models.generateContent({
-      model: "gemini-3.8-flash",
-      contents: formattedContents,
-      config: {
-        systemInstruction,
-        temperature: 0.7,
-      },
-    });
-
-    return (
-      response.text ||
-      (lang === "ar"
-        ? "أهلاً بكِ في لينورا ستيلر! كيف يمكنني مساعدتكِ في طلبك اليوم؟"
-        : "Welcome to Linora Stellar! How can I help you design your next project?")
-    );
+    const { text } = await askOrderingAssistant({ data: { conversation, lang } });
+    if (text) return text;
   } catch (error) {
-    console.warn("Gemini API call returned fallback:", error);
-    const lastUserMsg = conversation.filter((m) => m.role === "user").pop()?.text || "";
-    return getFallbackResponse(lastUserMsg, lang);
+    console.warn("AI assistant unavailable, using fallback:", error);
   }
+  return getFallbackResponse(lastUserMsg, lang);
 }
 
 export async function generateAICreativeBrief(
   businessName: string,
   industry: string,
   vibe: string,
-  lang: "en" | "ar" = "en",
+  lang: Lang = "en",
 ) {
-  const ai = getAIClient();
-
-  const prompt = `
-Create a celestial-inspired, luxury creative design brief for:
-- Brand Name: ${businessName}
-- Industry: ${industry}
-- Desired Style / Vibe: ${vibe}
-
-Provide:
-1. Brand Persona & Core Mood
-2. Color Palette with 4 Hex Codes and poetic names
-3. Typography pairing suggestions (Display serif + Clean modern sans)
-4. Key visual symbols & motifs (e.g. constellations, botanical, gold foil)
-5. Recommended deliverables for launch
-
-Language: ${lang === "ar" ? "Arabic" : "English"}.
-`;
-
-  if (!ai) {
-    return {
-      brandPersona: `${businessName} embodies refined, timeless elegance with celestial quiet luxury.`,
-      palette: [
-        { name: "Celestial Navy", hex: "#080D1A" },
-        { name: "Radiant Gold", hex: "#DFAD71" },
-        { name: "Ivory Parchment", hex: "#FFF6ED" },
-        { name: "Starlight Slate", hex: "#28344E" },
-      ],
-      typography: "Cormorant Garamond (Serif Display) paired with Jost (Clean Sans)",
-      motifs: "Four-pointed radiant star, orbital ring, celestial dust, minimal luxury borders",
-      deliverables: [
-        "Primary & Secondary Logo",
-        "Color Guide",
-        "Social Templates",
-        "Packaging Art",
-      ],
-    };
-  }
-
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-3.8-flash",
-      contents: prompt,
+    const { text } = await createCreativeBrief({
+      data: { businessName, industry, vibe, lang },
     });
-    return response.text || "";
-  } catch (err) {
-    console.warn("AI Brief error:", err);
-    return "";
+    if (text) return text;
+  } catch (error) {
+    console.warn("AI brief unavailable, using fallback:", error);
   }
+  return {
+    brandPersona: `${businessName} embodies refined, timeless elegance with celestial quiet luxury.`,
+    palette: [
+      { name: "Celestial Navy", hex: "#080D1A" },
+      { name: "Radiant Gold", hex: "#DFAD71" },
+      { name: "Ivory Parchment", hex: "#FFF6ED" },
+      { name: "Starlight Slate", hex: "#28344E" },
+    ],
+    typography: "Cormorant Garamond (Serif Display) paired with Jost (Clean Sans)",
+    motifs: "Four-pointed radiant star, orbital ring, celestial dust, minimal luxury borders",
+    deliverables: ["Primary & Secondary Logo", "Color Guide", "Social Templates", "Packaging Art"],
+  };
 }
 
 export async function generateAdminSummaryReport(
@@ -153,40 +61,18 @@ export async function generateAdminSummaryReport(
     totalRevenue: number;
     customRequests: number;
   },
-  lang: "en" | "ar" = "en",
+  lang: Lang = "en",
 ) {
-  const ai = getAIClient();
-  const prompt = `
-Generate a quick 3-bullet executive smart summary for the store owner Nora Tamer (Linora Stellar, Cairo Egypt).
-Current metrics:
-- Total Orders: ${stats.orderCount}
-- Pending Orders: ${stats.pendingOrders}
-- Total Revenue: ${stats.totalRevenue} EGP
-- Custom Design Inquiries: ${stats.customRequests}
-
-Provide:
-1. Warm greeting to Nora with current store pulse.
-2. What to focus on today (e.g., verifying pending Vodafone Cash/InstaPay transfers, packing orders).
-3. 1 actionable strategic growth idea for Linora Stellar (e.g., feature personalized school name stickers or launch a bridal stationery kit).
-
-Language: ${lang === "ar" ? "Arabic" : "English"}. Keep it friendly, encouraging, and under 120 words.
-`;
-
-  if (!ai) {
-    return lang === "ar"
-      ? `✦ مرحباً نورا! متجركِ يسجل نشاطاً رائعاً مع ${stats.pendingOrders} طلبات قيد المراجعة وإجمالي مبيعات ${stats.totalRevenue} ج.م.\n✦ الأولوية اليوم: مراجعة إيصالات فودافون كاش وإنستاباي لتأكيد شحن طلبات القاهرة والجيزة.\n✦ فكرة مقترحة: تسليط الضوء على ملصقات الأسماء المخصصة للأطفال ومخططات ستيلر الرقمية على واجهة المتجر.`
-      : `✦ Hello Nora! Your studio is active with ${stats.pendingOrders} pending orders and ${stats.totalRevenue} EGP in revenue.\n✦ Priority today: Verify incoming payment receipts for Cairo & Giza courier dispatch.\n✦ Strategic tip: Highlight custom name labels and digital planners on the homepage banner this week.`;
-  }
-
   try {
-    const res = await ai.models.generateContent({
-      model: "gemini-3.8-flash",
-      contents: prompt,
-    });
-    return res.text || "";
-  } catch {
-    return "";
+    const { text } = await createAdminSummary({ data: { stats, lang } });
+    if (text) return text;
+  } catch (error) {
+    console.warn("AI summary unavailable, using fallback:", error);
   }
+  // Plain, factual fallback built only from the real numbers — no invented claims.
+  return lang === "ar"
+    ? `✦ إجمالي الطلبات: ${stats.orderCount} (منها ${stats.pendingOrders} قيد المراجعة).\n✦ إجمالي المبيعات: ${stats.totalRevenue} ج.م.\n✦ طلبات التصميم الخاص: ${stats.customRequests}.`
+    : `✦ Total orders: ${stats.orderCount} (${stats.pendingOrders} pending).\n✦ Total revenue: ${stats.totalRevenue} EGP.\n✦ Custom design requests: ${stats.customRequests}.`;
 }
 
 function getFallbackResponse(userInput: string, lang: "en" | "ar"): string {

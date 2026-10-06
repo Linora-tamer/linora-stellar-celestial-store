@@ -25,6 +25,8 @@ import { Star } from "@/components/site/Star";
 import { DynamicCostEstimator } from "@/components/site/DynamicCostEstimator";
 import { generateAICreativeBrief } from "@/lib/gemini";
 import { supabase } from "@/integrations/supabase/client";
+import { hasBackend } from "@/lib/backend";
+import { submitCustomOrder } from "@/lib/contact.functions";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { CONTACT } from "@/lib/store";
@@ -215,23 +217,47 @@ Deadline: ${formData.deadline}
 Colors: ${formData.preferredColors}
     `.trim();
 
-    const { error } = await supabase.from("custom_orders").insert({
-      user_id: user?.id ?? null,
-      name: formData.name.trim() || "Celestial Client",
-      email: formData.email.trim(),
-      phone: formData.phone.trim(),
-      design_type: designType,
-      description: fullDesc,
-      preferred_style: chosenThemeObj?.nameEn || selectedTheme,
-      preferred_colors: formData.preferredColors,
-      budget: formData.budget,
-      deadline: formData.deadline,
-      status: "pending",
-    });
+    let failed = false;
+    if (hasBackend) {
+      // Server saves the request AND emails Nora.
+      try {
+        const res = await submitCustomOrder({
+          data: {
+            name: formData.name.trim() || "Celestial Client",
+            email: formData.email.trim(),
+            phone: formData.phone.trim(),
+            designType,
+            description: fullDesc,
+            preferredStyle: chosenThemeObj?.nameEn || selectedTheme,
+            preferredColors: formData.preferredColors || undefined,
+            budget: formData.budget || undefined,
+            deadline: formData.deadline || undefined,
+          },
+        });
+        failed = !res.ok;
+      } catch {
+        failed = true;
+      }
+    } else {
+      const { error: mockError } = await supabase.from("custom_orders").insert({
+        user_id: user?.id ?? null,
+        name: formData.name.trim() || "Celestial Client",
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        design_type: designType,
+        description: fullDesc,
+        preferred_style: chosenThemeObj?.nameEn || selectedTheme,
+        preferred_colors: formData.preferredColors,
+        budget: formData.budget,
+        deadline: formData.deadline,
+        status: "pending",
+      });
+      failed = Boolean(mockError);
+    }
 
     setSubmitting(false);
 
-    if (error) {
+    if (failed) {
       toast.error(
         isAr
           ? "حدث خطأ أثناء الإرسال، يرجى المحاولة ثانية"

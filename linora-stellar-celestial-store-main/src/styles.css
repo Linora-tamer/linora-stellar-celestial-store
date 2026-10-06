@@ -1,0 +1,890 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+/*
+ * LINORA STELLAR — REAL-TIME DYNAMIC TIME-OF-DAY ENGINE
+ * 11 Astronomical Time Periods:
+ * Dawn, Sunrise, Morning, Forenoon, Noon, Afternoon, Dusk, Twilight, Evening, Night, Midnight.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--text-primary);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--text-primary);
+  --color-popover: var(--surface-elevated);
+  --color-popover-foreground: var(--text-primary);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--text-primary);
+  --color-secondary: var(--surface-elevated);
+  --color-secondary-foreground: var(--text-primary);
+  --color-muted: var(--surface);
+  --color-muted-foreground: var(--text-secondary);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--background);
+  --color-destructive: #f43f5e;
+  --color-destructive-foreground: #ffffff;
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--accent);
+  --color-gold: var(--accent);
+  --color-gold-soft: var(--accent);
+  --color-ink: var(--background);
+  --color-glow: var(--glow);
+
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Jost", ui-sans-serif, system-ui, sans-serif;
+  --shadow-star: 0 24px 60px -30px var(--glow);
+}
+
+/* =========================================================================
+ * EXACT THEME DEFINITIONS & COLOR TOKENS
+ * 1. Midnight (10:00 PM – 4:00 AM) [BASE PRIMARY THEME]: #090E1A, #E3C280, #FFFFFF
+ * 2. Dawn (4:00 AM – 8:00 AM): #EBE5F2 to #F5EAEC, #1A233A, warm gold borders
+ * 3. Daylight (8:00 AM – 5:00 PM): #EAF2F8 / #FAF6F0, #141D30, gold accents
+ * 4. Sunset (5:00 PM – 10:00 PM): #2A1A30 to #4A2840, #E3C280, warm amber/gold
+ * ========================================================================= */
+
+:root,
+[data-theme-period="midnight"],
+[data-theme="midnight"],
+[data-theme-period="night"],
+[data-theme="night"] {
+  --radius: 0.5rem;
+  --bg-gradient: radial-gradient(circle at 50% 50%, #0d1527 0%, #050811 100%);
+  --background: #090e1a;
+  --surface: #10192a;
+  --surface-elevated: #16233b;
+  --primary: #1e293b;
+  --accent: #e3c280;
+  --accent-gold: #e3c280;
+  --accent-glow: rgba(227, 194, 128, 0.5);
+  --card-bg: rgba(10, 17, 33, 0.7);
+  --nav-bg: rgba(5, 8, 17, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --nebula-color: rgba(34, 49, 93, 0.45);
+  --sub-text: #a0aec0;
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --border: rgba(227, 194, 128, 0.25);
+  --glow: rgba(227, 194, 128, 0.45);
+  --hero-overlay: linear-gradient(180deg, rgba(9, 14, 26, 0.6) 0%, rgba(16, 25, 42, 0.75) 100%);
+  --sky-top: #090e1a;
+  --sky-bottom: #10192a;
+}
+
+[data-theme-period="dawn"],
+[data-theme="dawn"],
+[data-theme-period="sunrise"],
+[data-theme="sunrise"] {
+  --bg-gradient: linear-gradient(135deg, #ebe5f2 0%, #f5eaec 100%);
+  --background: #ebe5f2;
+  --surface: #f5eaec;
+  --surface-elevated: #faf2f5;
+  --primary: #e2d7e8;
+  --accent: #d4a373;
+  --accent-gold: #c5a059;
+  --accent-glow: rgba(197, 160, 89, 0.3);
+  --card-bg: rgba(255, 255, 255, 0.55);
+  --nav-bg: rgba(235, 229, 242, 0.9);
+  --glass-border: rgba(26, 35, 58, 0.12);
+  --nebula-color: rgba(230, 190, 210, 0.4);
+  --sub-text: #4a5568;
+  --text-primary: #1a233a;
+  --text-secondary: #555e75;
+  --border: rgba(227, 194, 128, 0.45);
+  --glow: rgba(227, 194, 128, 0.38);
+  --hero-overlay: linear-gradient(
+    180deg,
+    rgba(235, 229, 242, 0.5) 0%,
+    rgba(245, 234, 236, 0.75) 100%
+  );
+  --sky-top: #ebe5f2;
+  --sky-bottom: #f5eaec;
+}
+
+[data-theme-period="daylight"],
+[data-theme="daylight"],
+[data-theme-period="morning"],
+[data-theme="morning"],
+[data-theme-period="forenoon"],
+[data-theme="forenoon"],
+[data-theme-period="noon"],
+[data-theme="noon"],
+[data-theme-period="afternoon"],
+[data-theme="afternoon"] {
+  --bg-gradient: radial-gradient(circle at 50% 30%, #faf6f0 0%, #eaf2f8 100%);
+  --background: #eaf2f8;
+  --surface: #faf6f0;
+  --surface-elevated: #ffffff;
+  --primary: #dce7f2;
+  --accent: #c5a059;
+  --accent-gold: #b89343;
+  --accent-glow: rgba(184, 147, 67, 0.3);
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --nav-bg: rgba(250, 246, 240, 0.9);
+  --glass-border: rgba(20, 29, 48, 0.12);
+  --nebula-color: rgba(190, 215, 235, 0.35);
+  --sub-text: #4a5568;
+  --text-primary: #141d30;
+  --text-secondary: #475569;
+  --border: rgba(197, 160, 89, 0.35);
+  --glow: rgba(197, 160, 89, 0.35);
+  --hero-overlay: linear-gradient(
+    180deg,
+    rgba(234, 242, 248, 0.45) 0%,
+    rgba(250, 246, 240, 0.65) 100%
+  );
+  --sky-top: #eaf2f8;
+  --sky-bottom: #faf6f0;
+}
+
+[data-theme-period="sunset"],
+[data-theme="sunset"],
+[data-theme-period="dusk"],
+[data-theme="dusk"],
+[data-theme-period="twilight"],
+[data-theme="twilight"],
+[data-theme-period="evening"],
+[data-theme="evening"] {
+  --bg-gradient: linear-gradient(180deg, #2a1a30 0%, #4a2840 100%);
+  --background: #2a1a30;
+  --surface: #3d2244;
+  --surface-elevated: #4a2840;
+  --primary: #4a2840;
+  --accent: #e3c280;
+  --accent-gold: #f2c94c;
+  --accent-glow: rgba(242, 201, 76, 0.5);
+  --card-bg: rgba(74, 40, 64, 0.55);
+  --nav-bg: rgba(42, 26, 48, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --nebula-color: rgba(140, 50, 110, 0.4);
+  --sub-text: #cbd5e0;
+  --text-primary: #fff7ed;
+  --text-secondary: #d4c5d9;
+  --border: rgba(227, 194, 128, 0.35);
+  --glow: rgba(227, 194, 128, 0.48);
+  --hero-overlay: linear-gradient(180deg, rgba(42, 26, 48, 0.55) 0%, rgba(74, 40, 64, 0.7) 100%);
+  --sky-top: #2a1a30;
+  --sky-bottom: #4a2840;
+}
+
+/* =========================================================================
+ * SMOOTH CINEMATIC TRANSITIONS (transition: all 1.5s ease-in-out)
+ * ========================================================================= */
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    transition: all 1.5s ease-in-out;
+  }
+
+  header,
+  footer,
+  aside,
+  main,
+  section,
+  nav,
+  div[data-theme-transition="true"] {
+    transition:
+      background-color 1.5s ease-in-out,
+      border-color 1.5s ease-in-out,
+      color 1.5s ease-in-out;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
+    color: var(--text-primary);
+  }
+}
+
+@utility sky {
+  background: linear-gradient(180deg, var(--sky-top), var(--sky-bottom));
+}
+
+@utility starfield {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(1.4px 1.4px at 12% 22%, var(--accent), transparent),
+      radial-gradient(1.2px 1.2px at 68% 14%, var(--accent), transparent),
+      radial-gradient(1.6px 1.6px at 82% 62%, var(--accent), transparent),
+      radial-gradient(1.2px 1.2px at 32% 74%, var(--accent), transparent),
+      radial-gradient(1px 1px at 52% 44%, var(--accent), transparent),
+      radial-gradient(1px 1px at 92% 32%, var(--accent), transparent);
+    opacity: 0.55;
+    animation: twinkle 6s ease-in-out infinite;
+  }
+}
+
+@utility gold-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+
+@utility text-gradient-gold {
+  background: linear-gradient(100deg, var(--text-primary), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility card-star {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 50px -35px var(--glow);
+  transition:
+    transform 0.35s ease,
+    background-color 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.4s ease,
+    box-shadow 0.4s ease,
+    color 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 30px 60px -30px var(--glow);
+  }
+}
+
+@utility text-text-primary {
+  color: var(--text-primary);
+}
+
+@utility text-text-secondary {
+  color: var(--text-secondary);
+}
+
+@utility bg-surface {
+  background-color: var(--surface);
+}
+
+@utility bg-surface-elevated {
+  background-color: var(--surface-elevated);
+}
+
+@utility border-border {
+  border-color: var(--border);
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes pulse-celestial {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+/* =========================================================================
+ * ACCENT BUTTONS & TEXT CONTRAST GUARDS
+ * ========================================================================= */
+
+.bg-accent,
+.bg-gold,
+button.bg-accent,
+a.bg-accent {
+  color: #090e1a;
+}
+
+[data-theme-period="dawn"] .bg-accent,
+[data-theme-period="dawn"] .bg-gold,
+[data-theme-period="daylight"] .bg-accent,
+[data-theme-period="daylight"] .bg-gold,
+[data-theme-period="morning"] .bg-accent,
+[data-theme-period="morning"] .bg-gold,
+[data-theme-period="forenoon"] .bg-accent,
+[data-theme-period="forenoon"] .bg-gold,
+[data-theme-period="noon"] .bg-accent,
+[data-theme-period="noon"] .bg-gold,
+[data-theme-period="afternoon"] .bg-accent,
+[data-theme-period="afternoon"] .bg-gold {
+  color: #141d30;
+}
+
+/* =========================================================================
+ * COSMIC SHOWCASE & 3D TILT GLARE UTILITIES
+ * ========================================================================= */
+
+.halo-ring {
+  position: absolute;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  border: 1px dashed var(--accent);
+  animation: rotateHalo 25s linear infinite;
+  opacity: 0.45;
+  box-shadow: 0 0 45px var(--glow);
+  pointer-events: none;
+}
+
+.tilt-surface {
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transform: perspective(1000px);
+  transition:
+    transform 0.15s ease-out,
+    box-shadow 0.3s ease;
+}
+
+.tilt-glare {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+  transform: translateZ(20px);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.tilt-surface:hover .tilt-glare {
+  opacity: 1;
+}
+
+.cta-btn {
+  background: var(--accent);
+  color: #050811;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 0 24px var(--glow);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.cta-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 0 32px var(--glow);
+}
+
+@keyframes rotateHalo {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================================
+ * CINEMATIC INTRO CURTAIN
+ * ========================================================================= */
+
+#cinema-intro {
+  position: fixed;
+  inset: 0;
+  background: #03050a;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition:
+    opacity 1.2s cubic-bezier(0.77, 0, 0.175, 1),
+    visibility 1.2s;
+}
+
+.intro-logo {
+  font-family: var(--font-display);
+  font-size: clamp(38px, 6vw, 54px);
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 6px;
+  text-shadow: 0 0 35px var(--glow);
+  opacity: 0;
+  transform: scale(0.9);
+  animation: cinematicPulse 3.5s forwards ease-in-out;
+}
+
+.intro-sub {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(16px, 3vw, 22px);
+  color: var(--text-secondary);
+  margin-top: 14px;
+  letter-spacing: 2px;
+  opacity: 0;
+  animation: fadeInDelay 2.5s 0.8s forwards ease-in-out;
+}
+
+.enter-cosmos-btn {
+  margin-top: 36px;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  opacity: 0;
+  animation: fadeInDelay 1.5s 1.6s forwards;
+  box-shadow: 0 0 20px var(--glow);
+  transition: all 0.3s ease;
+}
+
+.enter-cosmos-btn:hover {
+  background: var(--accent);
+  color: #000;
+  box-shadow: 0 0 35px var(--accent);
+  transform: scale(1.05);
+}
+
+.curtain-panel {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: #03050a;
+  transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+  z-index: -1;
+}
+
+.curtain-top {
+  top: 0;
+}
+
+.curtain-bottom {
+  bottom: 0;
+}
+
+#cinema-intro.fade-out .curtain-top {
+  transform: translateY(-100%);
+}
+
+#cinema-intro.fade-out .curtain-bottom {
+  transform: translateY(100%);
+}
+
+#cinema-intro.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@keyframes cinematicPulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInDelay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* =========================================================================
+ * FLOATING ANIMATIONS & NEBULA DRIFT
+ * ========================================================================= */
+
+.animate-float {
+  animation: cosmicFloat 6s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: cosmicFloatSlow 8s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: cosmicFloatReverse 7s ease-in-out infinite 1.5s;
+}
+
+.animate-nebula-slow {
+  animation: nebulaDrift 28s ease-in-out infinite alternate;
+}
+
+.animate-nebula-reverse {
+  animation: nebulaDriftReverse 35s ease-in-out infinite alternate;
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+@keyframes cosmicFloat {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+@keyframes cosmicFloatSlow {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(-1.5deg);
+  }
+}
+
+@keyframes cosmicFloatReverse {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(8px) rotate(1deg);
+  }
+}
+
+@keyframes nebulaDrift {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 0.65;
+  }
+  50% {
+    transform: translate(30px, -25px) scale(1.08) rotate(4deg);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(-20px, 35px) scale(1.03) rotate(-3deg);
+    opacity: 0.7;
+  }
+}
+
+@keyframes nebulaDriftReverse {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate(-35px, 20px) scale(1.1) rotate(-5deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(25px, -30px) scale(0.96) rotate(3deg);
+    opacity: 0.6;
+  }
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 15px var(--glow));
+  }
+  50% {
+    filter: drop-shadow(0 0 30px var(--glow)) drop-shadow(0 0 50px var(--accent));
+  }
+}
+
+/* =========================================================================
+ * COSMIC SCROLL REVEAL STYLES & SHIMMER
+ * ========================================================================= */
+
+.cosmic-reveal {
+  opacity: 0;
+  transform: translateY(28px) scale(0.98);
+  filter: blur(4px);
+  transition:
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
+}
+
+.cosmic-reveal.cosmic-revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+.cosmic-shimmer-active {
+  position: relative;
+}
+
+.cosmic-shimmer-active::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%);
+  opacity: 0;
+  animation: cosmicShimmerSweep 1.6s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes cosmicShimmerSweep {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.2);
+  }
+  40% {
+    opacity: 0.9;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1.1);
+  }
+}
+
+/* =======================================================
+ * STAR-FIELD CURSOR & COSMIC NAVIGATION STYLES
+ * ======================================================= */
+
+@media (pointer: fine) {
+  body.has-star-cursor,
+  body.has-star-cursor a,
+  body.has-star-cursor button,
+  body.has-star-cursor [role="button"],
+  body.has-star-cursor .clickable,
+  body.has-star-cursor .card-star {
+    cursor: none !important;
+  }
+
+  body.has-star-cursor input,
+  body.has-star-cursor textarea,
+  body.has-star-cursor [contenteditable="true"] {
+    cursor: text !important;
+  }
+}
+
+.cosmic-nav-link {
+  position: relative;
+}
+
+.cosmic-nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 14px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 9999px;
+  box-shadow: 0 0 8px var(--accent);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cosmic-nav-link:hover::after,
+.cosmic-nav-link.is-active::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* =======================================================
+ * READABILITY OVERLAY, DYNAMIC FONT WEIGHT & HIGH CONTRAST
+ * ======================================================= */
+
+/* 1. Dynamic Font Weight Modes */
+[data-font-weight="medium"] body,
+[data-font-weight="medium"] p,
+[data-font-weight="medium"] span,
+[data-font-weight="medium"] li,
+[data-font-weight="medium"] a,
+[data-font-weight="medium"] button,
+[data-font-weight="medium"] input,
+[data-font-weight="medium"] label {
+  font-weight: 500 !important;
+}
+
+[data-font-weight="medium"] h1,
+[data-font-weight="medium"] h2,
+[data-font-weight="medium"] h3,
+[data-font-weight="medium"] h4,
+[data-font-weight="medium"] .font-display {
+  font-weight: 700 !important;
+}
+
+[data-font-weight="bold"] body,
+[data-font-weight="bold"] p,
+[data-font-weight="bold"] span,
+[data-font-weight="bold"] li,
+[data-font-weight="bold"] a,
+[data-font-weight="bold"] button,
+[data-font-weight="bold"] input,
+[data-font-weight="bold"] label {
+  font-weight: 600 !important;
+}
+
+[data-font-weight="bold"] h1,
+[data-font-weight="bold"] h2,
+[data-font-weight="bold"] h3,
+[data-font-weight="bold"] h4,
+[data-font-weight="bold"] .font-display {
+  font-weight: 800 !important;
+}
+
+[data-font-weight="bold"] .font-bold,
+[data-font-weight="bold"] .font-semibold,
+[data-font-weight="bold"] strong,
+[data-font-weight="bold"] b {
+  font-weight: 900 !important;
+}
+
+/* 2. Readability Overlay Scrim Mode */
+[data-readability-overlay="true"] #starfield,
+[data-readability-overlay="true"] canvas#starfield {
+  opacity: 0.12 !important;
+  filter: blur(1.5px);
+  transition: opacity 0.5s ease;
+}
+
+[data-readability-overlay="true"] .animate-nebula-slow,
+[data-readability-overlay="true"] .animate-nebula-reverse {
+  opacity: 0.2 !important;
+}
+
+[data-readability-overlay="true"] .card-star,
+[data-readability-overlay="true"] article,
+[data-readability-overlay="true"] section {
+  backdrop-filter: blur(20px) !important;
+}
+
+[data-readability-overlay="true"] h1,
+[data-readability-overlay="true"] h2,
+[data-readability-overlay="true"] h3,
+[data-readability-overlay="true"] h4 {
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+/* 3. High-Contrast Text Modes */
+[data-contrast-mode="high"] {
+  --text-primary: #ffffff !important;
+  --text-secondary: #e2e8f0 !important;
+  --border: rgba(227, 194, 128, 0.8) !important;
+  --accent: #ffd700 !important;
+  --surface: #0e172a !important;
+  --surface-elevated: #15223c !important;
+}
+
+[data-contrast-mode="high"] p,
+[data-contrast-mode="high"] span,
+[data-contrast-mode="high"] li {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+[data-contrast-mode="max"] {
+  --background: #000000 !important;
+  --surface: #0a0a0a !important;
+  --surface-elevated: #141414 !important;
+  --text-primary: #ffffff !important;
+  --text-secondary: #f1f5f9 !important;
+  --border: #ffd700 !important;
+  --accent: #ffe066 !important;
+  --glass-border: #ffd700 !important;
+}
+
+[data-contrast-mode="max"] .card-star,
+[data-contrast-mode="max"] button,
+[data-contrast-mode="max"] input {
+  border-width: 2px !important;
+}
+
+[data-contrast-mode="max"] a:hover {
+  text-decoration: underline !important;
+}
+
+[dir="rtl"] body,
+[dir="rtl"] .font-display {
+  font-family: "Tajawal", var(--font-sans);
+  letter-spacing: 0;
+}
+
+[dir="rtl"] [class*="tracking-"] {
+  letter-spacing: 0;
+}
+
+/* Horizontal Track & Scrollbar Hide Utilities */
+.scrollbar-none,
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.mask-edge-fade {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 18px,
+    black calc(100% - 18px),
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 18px,
+    black calc(100% - 18px),
+    transparent
+  );
+}

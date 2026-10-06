@@ -97,7 +97,7 @@ export function CelestialAtmosphere() {
           size: Math.random() * 2.6 + 0.9,
           alpha: 1,
           decay: burst ? Math.random() * 0.02 + 0.012 : Math.random() * 0.028 + 0.016,
-          color: colors[Math.floor(Math.random() * colors.length)],
+          color: colors[Math.floor(Math.random() * colors.length)] ?? "#E3C280",
           rotation: Math.random() * Math.PI,
           rotSpeed: (Math.random() - 0.5) * 0.12,
           hasSparkle: Math.random() > 0.3,
@@ -143,18 +143,22 @@ export function CelestialAtmosphere() {
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
         const touch = e.touches[0];
-        mouseX = touch.clientX;
-        mouseY = touch.clientY;
-        addTrailPoint(mouseX, mouseY);
+        if (touch) {
+          mouseX = touch.clientX;
+          mouseY = touch.clientY;
+          addTrailPoint(mouseX, mouseY);
+        }
       }
     };
 
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length > 0) {
         const touch = e.touches[0];
-        mouseX = touch.clientX;
-        mouseY = touch.clientY;
-        spawnStardust(mouseX, mouseY, 16, true);
+        if (touch) {
+          mouseX = touch.clientX;
+          mouseY = touch.clientY;
+          spawnStardust(mouseX, mouseY, 16, true);
+        }
       }
     };
 
@@ -248,6 +252,7 @@ export function CelestialAtmosphere() {
       // 1. Draw Shooting Stars / Meteors
       for (let i = shootingStars.length - 1; i >= 0; i--) {
         const m = shootingStars[i];
+        if (!m) continue;
         m.x += m.vx;
         m.y += m.vy;
         m.alpha -= m.decay;
@@ -292,6 +297,7 @@ export function CelestialAtmosphere() {
         for (let i = 1; i < trail.length; i++) {
           const p1 = trail[i - 1];
           const p2 = trail[i];
+          if (!p1 || !p2) continue;
           const midX = (p1.x + p2.x) / 2;
           const midY = (p1.y + p2.y) / 2;
 
@@ -318,6 +324,7 @@ export function CelestialAtmosphere() {
       if (trail.length > 0) {
         for (let i = 0; i < trail.length; i++) {
           const pt = trail[i];
+          if (!pt) continue;
           pt.alpha *= 0.91;
           if (pt.alpha > 0.02) {
             ctx.save();
@@ -338,6 +345,7 @@ export function CelestialAtmosphere() {
       // 4. Draw sparkling cosmic cursor trail (stardust diamond sparks)
       for (let i = stardust.length - 1; i >= 0; i--) {
         const spark = stardust[i];
+        if (!spark) continue;
         spark.x += spark.vx;
         spark.y += spark.vy;
         spark.rotation += spark.rotSpeed;

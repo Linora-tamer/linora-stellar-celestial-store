@@ -102,8 +102,14 @@ const SCOPE_OPTIONS: ScopeOption[] = [
 
 export function DynamicCostEstimator({
   onSelectScope,
+  onApplyEstimate,
 }: {
   onSelectScope?: (summary: string) => void;
+  onApplyEstimate?: (details: {
+    totalPrice: number;
+    totalDays: number;
+    summaryText: string;
+  }) => void;
 }) {
   const { lang } = useI18n();
   const isAr = lang === "ar";
@@ -356,6 +362,27 @@ export function DynamicCostEstimator({
               </span>
             </div>
           </div>
+
+          {/* Apply Button to Form if Handler is passed */}
+          {onApplyEstimate && (
+            <button
+              type="button"
+              onClick={() => {
+                const summaryText = `${selectedItemsSummary} | ${revisions} revisions ${isRush ? "| Rush Delivery" : ""}`;
+                onApplyEstimate({
+                  totalPrice: finalPrice,
+                  totalDays: estimatedDays,
+                  summaryText,
+                });
+              }}
+              className="w-full flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-background hover:brightness-110 transition-colors shadow-md"
+            >
+              <Sparkles className="h-4 w-4" />
+              <span>
+                {isAr ? "تطبيق هذه الحسبة على نموذج الطلب" : "Apply Estimate to Order Form"}
+              </span>
+            </button>
+          )}
 
           {/* Direct WhatsApp Quote Button */}
           <a

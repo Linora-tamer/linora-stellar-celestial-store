@@ -19,13 +19,15 @@ interface Message {
   id: string;
   role: "user" | "model";
   text: string;
-  structuredOrder?: {
-    readyToOrder: boolean;
-    packageTitle: string;
-    estimatedPrice: string;
-    turnaround: string;
-    recommendedColors?: string[];
-  };
+  structuredOrder?:
+    | {
+        readyToOrder: boolean;
+        packageTitle: string;
+        estimatedPrice: string;
+        turnaround: string;
+        recommendedColors?: string[] | undefined;
+      }
+    | undefined;
 }
 
 export function ConversationalOrderAssistant({

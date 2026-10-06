@@ -58,7 +58,7 @@ export function PageFlipPreviewModal({
 
   if (!isOpen) return null;
 
-  const current = SAMPLE_PAGES[pageIndex];
+  const current = SAMPLE_PAGES[pageIndex] ?? SAMPLE_PAGES[0]!;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200">
