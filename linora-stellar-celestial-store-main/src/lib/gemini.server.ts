@@ -99,7 +99,12 @@ Language: ${lang === "ar" ? "Arabic" : "English"}.
 }
 
 export function adminSummaryPrompt(
-  stats: { orderCount: number; pendingOrders: number; totalRevenue: number; customRequests: number },
+  stats: {
+    orderCount: number;
+    pendingOrders: number;
+    totalRevenue: number;
+    customRequests: number;
+  },
   lang: "en" | "ar",
 ): string {
   return `

@@ -4,11 +4,7 @@
 // ai.functions.ts). These wrappers keep the original function names/signatures, call the
 // server functions, and fall back to the built-in canned answers when the server has no
 // key, is unreachable, or rate-limits the caller.
-import {
-  askOrderingAssistant,
-  createAdminSummary,
-  createCreativeBrief,
-} from "./ai.functions";
+import { askOrderingAssistant, createAdminSummary, createCreativeBrief } from "./ai.functions";
 
 type Lang = "en" | "ar";
 

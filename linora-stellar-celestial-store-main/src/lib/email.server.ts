@@ -150,7 +150,12 @@ export function ownerOrderEmail(order: OrderEmailData) {
   };
 }
 
-export function ownerContactEmail(msg: { name: string; email: string; subject?: string | null; message: string }) {
+export function ownerContactEmail(msg: {
+  name: string;
+  email: string;
+  subject?: string | null;
+  message: string;
+}) {
   return {
     subject: `Contact form: ${msg.subject?.trim() || "New message"} — ${msg.name}`,
     html: shell(

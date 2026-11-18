@@ -13,9 +13,9 @@ const BASE_URL = () => env("PAYMOB_BASE_URL") ?? "https://accept.paymob.com";
 export function isPaymobConfigured(): boolean {
   return Boolean(
     env("PAYMOB_SECRET_KEY") &&
-      env("PAYMOB_PUBLIC_KEY") &&
-      env("PAYMOB_INTEGRATION_ID") &&
-      env("PAYMOB_HMAC_SECRET"),
+    env("PAYMOB_PUBLIC_KEY") &&
+    env("PAYMOB_INTEGRATION_ID") &&
+    env("PAYMOB_HMAC_SECRET"),
   );
 }
 
@@ -155,7 +155,10 @@ function readPath(obj: Record<string, unknown>, path: string): string {
   return cur == null ? "" : String(cur);
 }
 
-export async function verifyHmac(obj: PaymobTransaction, received: string | null): Promise<boolean> {
+export async function verifyHmac(
+  obj: PaymobTransaction,
+  received: string | null,
+): Promise<boolean> {
   const secret = env("PAYMOB_HMAC_SECRET");
   if (!secret || !received) return false;
   const { createHmac, timingSafeEqual } = await import("node:crypto");

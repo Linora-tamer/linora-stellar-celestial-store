@@ -34,6 +34,7 @@ interface ExpressCheckoutModalProps {
 type ExpressCompletedOrder = {
   id: string;
   order_number: string;
+  customer_name: string;
   phone: string;
   total: number;
   [key: string]: unknown;
@@ -69,7 +70,7 @@ export function ExpressCheckoutModal({
 
   async function handleExpressSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !phone.trim() || (!isDigital && !address.trim())) {
+    if (!product || !name.trim() || !phone.trim() || (!isDigital && !address.trim())) {
       toast.error(
         isAr
           ? "يرجى استكمال البيانات الأساسية للتوصيل"

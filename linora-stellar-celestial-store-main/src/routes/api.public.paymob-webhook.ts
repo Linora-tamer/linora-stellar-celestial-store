@@ -31,7 +31,8 @@ export const Route = createFileRoute("/api/public/paymob-webhook")({
         }
 
         const { isSupabaseServerConfigured } = await import("@/lib/env.server");
-        if (!isSupabaseServerConfigured()) return new Response("Server not configured", { status: 500 });
+        if (!isSupabaseServerConfigured())
+          return new Response("Server not configured", { status: 500 });
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { notifyOrder } = await import("@/lib/orders.server");

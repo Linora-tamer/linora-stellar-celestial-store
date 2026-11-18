@@ -52,7 +52,10 @@ function Contact() {
       email: String(form.get("email") ?? "")
         .trim()
         .slice(0, 255),
-      subject: String(form.get("subject") ?? "").trim().slice(0, 150) || undefined,
+      subject:
+        String(form.get("subject") ?? "")
+          .trim()
+          .slice(0, 150) || undefined,
       message: String(form.get("message") ?? "")
         .trim()
         .slice(0, 2000),

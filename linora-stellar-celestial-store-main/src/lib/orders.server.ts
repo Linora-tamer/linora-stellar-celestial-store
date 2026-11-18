@@ -53,7 +53,9 @@ export async function notifyOrder(orderId: string): Promise<{ sent: boolean }> {
 
   const jobs: Array<Promise<boolean>> = [];
   const owner = ownerOrderEmail(order);
-  jobs.push(sendEmail({ to: OWNER_EMAIL, subject: owner.subject, html: owner.html, replyTo: order.email }));
+  jobs.push(
+    sendEmail({ to: OWNER_EMAIL, subject: owner.subject, html: owner.html, replyTo: order.email }),
+  );
 
   // Express checkout invents an address from the phone number; never email those.
   if (order.email && !order.email.endsWith(SYNTHETIC_EMAIL_SUFFIX)) {

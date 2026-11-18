@@ -441,7 +441,10 @@ function Admin() {
               ) : aiReport ? (
                 <div className="space-y-2 whitespace-pre-line">{aiReport}</div>
               ) : (
-                <p className="text-muted-foreground">Press “Regenerate AI Report” to get a summary of your orders (needs a Gemini API key).</p>
+                <p className="text-muted-foreground">
+                  Press “Regenerate AI Report” to get a summary of your orders (needs a Gemini API
+                  key).
+                </p>
               )}
             </div>
           </div>
@@ -458,8 +461,18 @@ function Admin() {
           </p>
           {(
             [
-              { id: "orders", label: "Orders & Payments", icon: Package, badge: pendingOrdersCount },
-              { id: "custom_requests", label: "Custom Requests", icon: Sparkles, badge: requests.length },
+              {
+                id: "orders",
+                label: "Orders & Payments",
+                icon: Package,
+                badge: pendingOrdersCount,
+              },
+              {
+                id: "custom_requests",
+                label: "Custom Requests",
+                icon: Sparkles,
+                badge: requests.length,
+              },
               { id: "products", label: "Products & Prices", icon: Tag, badge: 0 },
               { id: "categories", label: "Categories", icon: FolderOpen, badge: categories.length },
               { id: "messages", label: "Messages", icon: Inbox, badge: 0 },
@@ -499,457 +512,458 @@ function Admin() {
         </aside>
 
         <div className="min-w-0 flex-1">
+          {/* Tab 1: Orders & Payment Verification */}
+          {currentTab === "orders" && (
+            <section className="py-2">
+              <div className="flex items-center justify-between">
+                <h2 className="font-display text-2xl">Customer Orders ({orders.length})</h2>
+              </div>
 
-      {/* Tab 1: Orders & Payment Verification */}
-      {currentTab === "orders" && (
-        <section className="py-2">
-          <div className="flex items-center justify-between">
-            <h2 className="font-display text-2xl">Customer Orders ({orders.length})</h2>
-          </div>
+              {orders.length === 0 ? (
+                <div className="mt-6 rounded-xl border border-border p-10 text-center text-muted-foreground">
+                  No orders placed yet. As customers check out, their orders and transfer references
+                  will appear here.
+                </div>
+              ) : (
+                <div className="mt-6 space-y-4">
+                  {orders.map((o) => {
+                    const cleanPhone = (o.phone || "").replace(/\D/g, "");
+                    const waNumber = cleanPhone.startsWith("0") ? `2${cleanPhone}` : cleanPhone;
+                    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
+                      `Hi ${o.customer_name}! Nora here from Linora Stellar regarding your order ${o.order_number}.`,
+                    )}`;
 
-          {orders.length === 0 ? (
-            <div className="mt-6 rounded-xl border border-border p-10 text-center text-muted-foreground">
-              No orders placed yet. As customers check out, their orders and transfer references
-              will appear here.
-            </div>
-          ) : (
-            <div className="mt-6 space-y-4">
-              {orders.map((o) => {
-                const cleanPhone = (o.phone || "").replace(/\D/g, "");
-                const waNumber = cleanPhone.startsWith("0") ? `2${cleanPhone}` : cleanPhone;
-                const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
-                  `Hi ${o.customer_name}! Nora here from Linora Stellar regarding your order ${o.order_number}.`,
-                )}`;
+                    return (
+                      <div
+                        key={o.id}
+                        className="card-star rounded-xl border border-border p-5 transition-all hover:border-gold/40"
+                      >
+                        <div className="flex flex-wrap items-start justify-between gap-4">
+                          <div>
+                            <div className="flex items-center gap-3">
+                              <span className="font-mono text-base font-bold text-gold">
+                                {o.order_number}
+                              </span>
+                              {statusBadge(o.status)}
+                              {o.payment_status === "paid" ? (
+                                <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
+                                  Paid
+                                </span>
+                              ) : o.payment_status === "pending" ? (
+                                <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-400">
+                                  Card payment pending
+                                </span>
+                              ) : o.payment_status === "failed" ? (
+                                <span className="rounded-full border border-rose-500/30 bg-rose-500/10 px-2.5 py-0.5 text-xs font-medium text-rose-400">
+                                  Payment failed
+                                </span>
+                              ) : (
+                                <span className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground">
+                                  Unpaid
+                                </span>
+                              )}
+                              <span className="text-xs text-muted-foreground">
+                                {new Date(o.created_at).toLocaleDateString()} at{" "}
+                                {new Date(o.created_at).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </span>
+                            </div>
+                            <h3 className="mt-2 text-lg font-medium text-foreground">
+                              {o.customer_name}
+                            </h3>
+                            <p className="text-xs text-muted-foreground">
+                              {o.email} • {o.phone}
+                            </p>
+                            {o.address && (
+                              <p className="mt-1 text-xs text-muted-foreground">
+                                📍 {o.address} {o.governorate && `(${o.governorate})`}
+                              </p>
+                            )}
+                          </div>
 
-                return (
-                  <div
-                    key={o.id}
-                    className="card-star rounded-xl border border-border p-5 transition-all hover:border-gold/40"
-                  >
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                      <div>
-                        <div className="flex items-center gap-3">
-                          <span className="font-mono text-base font-bold text-gold">
-                            {o.order_number}
-                          </span>
-                          {statusBadge(o.status)}
-                          {o.payment_status === "paid" ? (
-                            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
-                              Paid
+                          <div className="text-right">
+                            <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                              Total
                             </span>
-                          ) : o.payment_status === "pending" ? (
-                            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-400">
-                              Card payment pending
-                            </span>
-                          ) : o.payment_status === "failed" ? (
-                            <span className="rounded-full border border-rose-500/30 bg-rose-500/10 px-2.5 py-0.5 text-xs font-medium text-rose-400">
-                              Payment failed
-                            </span>
-                          ) : (
-                            <span className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground">
-                              Unpaid
-                            </span>
-                          )}
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(o.created_at).toLocaleDateString()} at{" "}
-                            {new Date(o.created_at).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
+                            <p className="font-display text-2xl text-gold">
+                              {formatPrice(Number(o.total))}
+                            </p>
+                            <p className="mt-1 text-xs capitalize text-muted-foreground">
+                              Method: {o.payment_method.replace("_", " ")}
+                            </p>
+                          </div>
                         </div>
-                        <h3 className="mt-2 text-lg font-medium text-foreground">
-                          {o.customer_name}
-                        </h3>
-                        <p className="text-xs text-muted-foreground">
-                          {o.email} • {o.phone}
-                        </p>
-                        {o.address && (
-                          <p className="mt-1 text-xs text-muted-foreground">
-                            📍 {o.address} {o.governorate && `(${o.governorate})`}
-                          </p>
-                        )}
-                      </div>
 
-                      <div className="text-right">
-                        <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                          Total
-                        </span>
-                        <p className="font-display text-2xl text-gold">
-                          {formatPrice(Number(o.total))}
-                        </p>
-                        <p className="mt-1 text-xs capitalize text-muted-foreground">
-                          Method: {o.payment_method.replace("_", " ")}
-                        </p>
-                      </div>
-                    </div>
+                        {/* Payment Reference & Actions Bar */}
+                        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-4">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                              Payment Reference:
+                            </span>
+                            {o.payment_reference ? (
+                              <span className="rounded-md border border-gold/40 bg-gold/10 px-2.5 py-1 font-mono text-xs font-semibold text-gold">
+                                {o.payment_reference}
+                              </span>
+                            ) : (
+                              <span className="text-xs italic text-muted-foreground">
+                                No reference supplied (COD or Direct)
+                              </span>
+                            )}
+                          </div>
 
-                    {/* Payment Reference & Actions Bar */}
-                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                          Payment Reference:
-                        </span>
-                        {o.payment_reference ? (
-                          <span className="rounded-md border border-gold/40 bg-gold/10 px-2.5 py-1 font-mono text-xs font-semibold text-gold">
-                            {o.payment_reference}
-                          </span>
-                        ) : (
-                          <span className="text-xs italic text-muted-foreground">
-                            No reference supplied (COD or Direct)
-                          </span>
-                        )}
-                      </div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            {o.phone && (
+                              <a
+                                href={waUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20"
+                              >
+                                <MessageCircle className="h-3.5 w-3.5" />
+                                <span>WhatsApp</span>
+                              </a>
+                            )}
 
-                      <div className="flex flex-wrap items-center gap-2">
-                        {o.phone && (
-                          <a
-                            href={waUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20"
-                          >
-                            <MessageCircle className="h-3.5 w-3.5" />
-                            <span>WhatsApp</span>
-                          </a>
-                        )}
+                            {o.payment_method !== "card" &&
+                              o.payment_method !== "cod" &&
+                              o.payment_status !== "paid" && (
+                                <button
+                                  type="button"
+                                  onClick={() => markOrderPaid(o.id)}
+                                  className="inline-flex items-center gap-1.5 rounded-lg border border-gold/50 bg-gold/10 px-3 py-1.5 text-xs font-medium text-gold hover:bg-gold/20"
+                                >
+                                  <CheckCircle2 className="h-3.5 w-3.5" />
+                                  <span>Mark paid</span>
+                                </button>
+                              )}
 
-                        {o.payment_method !== "card" &&
-                          o.payment_method !== "cod" &&
-                          o.payment_status !== "paid" && (
-                            <button
-                              type="button"
-                              onClick={() => markOrderPaid(o.id)}
-                              className="inline-flex items-center gap-1.5 rounded-lg border border-gold/50 bg-gold/10 px-3 py-1.5 text-xs font-medium text-gold hover:bg-gold/20"
+                            {o.status === "pending" && (
+                              <button
+                                type="button"
+                                onClick={() => updateOrderStatus(o.id, "confirmed")}
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-500"
+                              >
+                                <CheckCircle2 className="h-3.5 w-3.5" />
+                                <span>Verify & Confirm</span>
+                              </button>
+                            )}
+
+                            {o.status === "confirmed" && (
+                              <button
+                                type="button"
+                                onClick={() => updateOrderStatus(o.id, "shipped")}
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-purple-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-purple-500"
+                              >
+                                <Truck className="h-3.5 w-3.5" />
+                                <span>Mark Shipped</span>
+                              </button>
+                            )}
+
+                            {o.status === "shipped" && (
+                              <button
+                                type="button"
+                                onClick={() => updateOrderStatus(o.id, "delivered")}
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-600"
+                              >
+                                <Package className="h-3.5 w-3.5" />
+                                <span>Mark Delivered</span>
+                              </button>
+                            )}
+
+                            <select
+                              value={o.status}
+                              onChange={(e) => updateOrderStatus(o.id, e.target.value)}
+                              className="rounded-lg border border-input bg-background px-2.5 py-1 text-xs text-foreground outline-none focus:border-gold"
                             >
-                              <CheckCircle2 className="h-3.5 w-3.5" />
-                              <span>Mark paid</span>
-                            </button>
-                          )}
-
-                        {o.status === "pending" && (
-                          <button
-                            type="button"
-                            onClick={() => updateOrderStatus(o.id, "confirmed")}
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-500"
-                          >
-                            <CheckCircle2 className="h-3.5 w-3.5" />
-                            <span>Verify & Confirm</span>
-                          </button>
-                        )}
-
-                        {o.status === "confirmed" && (
-                          <button
-                            type="button"
-                            onClick={() => updateOrderStatus(o.id, "shipped")}
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-purple-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-purple-500"
-                          >
-                            <Truck className="h-3.5 w-3.5" />
-                            <span>Mark Shipped</span>
-                          </button>
-                        )}
-
-                        {o.status === "shipped" && (
-                          <button
-                            type="button"
-                            onClick={() => updateOrderStatus(o.id, "delivered")}
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-600"
-                          >
-                            <Package className="h-3.5 w-3.5" />
-                            <span>Mark Delivered</span>
-                          </button>
-                        )}
-
-                        <select
-                          value={o.status}
-                          onChange={(e) => updateOrderStatus(o.id, e.target.value)}
-                          className="rounded-lg border border-input bg-background px-2.5 py-1 text-xs text-foreground outline-none focus:border-gold"
-                        >
-                          <option value="pending">Pending</option>
-                          <option value="confirmed">Confirmed</option>
-                          <option value="shipped">Shipped</option>
-                          <option value="delivered">Delivered</option>
-                          <option value="cancelled">Cancelled</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* Tab 2: Custom Design Requests */}
-      {currentTab === "custom_requests" && (
-        <section className="py-2">
-          <h2 className="font-display text-2xl">Custom Requests ({requests.length})</h2>
-
-          {requests.length === 0 ? (
-            <div className="mt-6 rounded-xl border border-border p-10 text-center text-muted-foreground">
-              No custom design requests yet.
-            </div>
-          ) : (
-            <div className="mt-6 space-y-4">
-              {requests.map((r) => {
-                const cleanPhone = (r.phone || "").replace(/\D/g, "");
-                const waNumber = cleanPhone.startsWith("0") ? `2${cleanPhone}` : cleanPhone;
-                const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
-                  `Hi ${r.name}! Nora from Linora Stellar here regarding your custom design request for "${r.design_type}".`,
-                )}`;
-
-                return (
-                  <div key={r.id} className="card-star rounded-xl border border-border p-5">
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                      <div>
-                        <div className="flex items-center gap-3">
-                          <h3 className="font-display text-xl font-medium">{r.name}</h3>
-                          <span className="rounded-full bg-gold/10 px-2.5 py-0.5 text-xs text-gold">
-                            {r.design_type}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(r.created_at).toLocaleDateString()}
-                          </span>
+                              <option value="pending">Pending</option>
+                              <option value="confirmed">Confirmed</option>
+                              <option value="shipped">Shipped</option>
+                              <option value="delivered">Delivered</option>
+                              <option value="cancelled">Cancelled</option>
+                            </select>
+                          </div>
                         </div>
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          {r.email} • {r.phone}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Tab 2: Custom Design Requests */}
+          {currentTab === "custom_requests" && (
+            <section className="py-2">
+              <h2 className="font-display text-2xl">Custom Requests ({requests.length})</h2>
+
+              {requests.length === 0 ? (
+                <div className="mt-6 rounded-xl border border-border p-10 text-center text-muted-foreground">
+                  No custom design requests yet.
+                </div>
+              ) : (
+                <div className="mt-6 space-y-4">
+                  {requests.map((r) => {
+                    const cleanPhone = (r.phone || "").replace(/\D/g, "");
+                    const waNumber = cleanPhone.startsWith("0") ? `2${cleanPhone}` : cleanPhone;
+                    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
+                      `Hi ${r.name}! Nora from Linora Stellar here regarding your custom design request for "${r.design_type}".`,
+                    )}`;
+
+                    return (
+                      <div key={r.id} className="card-star rounded-xl border border-border p-5">
+                        <div className="flex flex-wrap items-start justify-between gap-4">
+                          <div>
+                            <div className="flex items-center gap-3">
+                              <h3 className="font-display text-xl font-medium">{r.name}</h3>
+                              <span className="rounded-full bg-gold/10 px-2.5 py-0.5 text-xs text-gold">
+                                {r.design_type}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {new Date(r.created_at).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              {r.email} • {r.phone}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            {r.phone && (
+                              <a
+                                href={waUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20"
+                              >
+                                <MessageCircle className="h-3.5 w-3.5" />
+                                <span>Chat on WhatsApp</span>
+                              </a>
+                            )}
+
+                            <select
+                              value={r.status}
+                              onChange={(e) => updateCustomOrderStatus(r.id, e.target.value)}
+                              className="rounded-lg border border-input bg-background px-2.5 py-1 text-xs text-foreground outline-none focus:border-gold"
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="in_progress">In Progress</option>
+                              <option value="completed">Completed</option>
+                              <option value="declined">Declined</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 rounded-lg bg-background/50 p-4 text-sm text-foreground">
+                          <p className="font-medium text-xs uppercase tracking-wider text-gold mb-1">
+                            Brief & Description:
+                          </p>
+                          <p className="whitespace-pre-wrap leading-relaxed">{r.description}</p>
+                        </div>
+
+                        {(r.preferred_style ||
+                          r.preferred_colors ||
+                          r.budget ||
+                          r.deadline ||
+                          r.reference_url) && (
+                          <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
+                            {r.preferred_style && <span>🎨 Style: {r.preferred_style}</span>}
+                            {r.preferred_colors && <span>🖌 Colors: {r.preferred_colors}</span>}
+                            {r.budget && <span>💰 Budget: {r.budget}</span>}
+                            {r.deadline && <span>📅 Deadline: {r.deadline}</span>}
+                            {r.reference_url && (
+                              <a
+                                href={r.reference_url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-gold underline"
+                              >
+                                🔗 Inspiration Link
+                              </a>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Tab 3: Category Management */}
+          {currentTab === "categories" && (
+            <section className="py-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-display text-2xl">Store Categories ({categories.length})</h2>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Add, rename, reorder, or archive storefront categories without writing code.
+                  </p>
+                </div>
+                {!isCreatingCategory && !editingCategory && (
+                  <button
+                    type="button"
+                    onClick={startCreateCategory}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs uppercase tracking-[0.16em] text-primary-foreground hover:opacity-90"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    <span>Add Category</span>
+                  </button>
+                )}
+              </div>
+
+              {(isCreatingCategory || editingCategory) && (
+                <form
+                  onSubmit={saveCategory}
+                  className="mt-6 card-star space-y-4 rounded-xl border border-gold/40 p-6"
+                >
+                  <h3 className="font-display text-xl text-gold">
+                    {editingCategory ? "Edit Category" : "New Category"}
+                  </h3>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Name (English) *
+                      </label>
+                      <input
+                        value={catNameEn}
+                        onChange={(e) => setCatNameEn(e.target.value)}
+                        required
+                        placeholder="e.g. Wedding Stationery"
+                        className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-gold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Name (Arabic)
+                      </label>
+                      <input
+                        value={catNameAr}
+                        onChange={(e) => setCatNameAr(e.target.value)}
+                        placeholder="مثال: دعوات وأدوات الزفاف"
+                        className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-gold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs uppercase tracking-wider text-muted-foreground">
+                        URL Slug *
+                      </label>
+                      <input
+                        value={catSlug}
+                        onChange={(e) => setCatSlug(e.target.value)}
+                        required
+                        placeholder="e.g. wedding-stationery"
+                        className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-gold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Sort Order
+                      </label>
+                      <input
+                        type="number"
+                        value={catOrder}
+                        onChange={(e) => setCatOrder(Number(e.target.value))}
+                        className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-gold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Description (English)
+                      </label>
+                      <textarea
+                        value={catDescEn}
+                        onChange={(e) => setCatDescEn(e.target.value)}
+                        rows={2}
+                        placeholder="Short description for storefront filter"
+                        className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-gold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Description (Arabic)
+                      </label>
+                      <textarea
+                        value={catDescAr}
+                        onChange={(e) => setCatDescAr(e.target.value)}
+                        rows={2}
+                        placeholder="وصف مختصر للقسم يظهر بالمتجر"
+                        className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-gold"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 justify-end pt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsCreatingCategory(false);
+                        setEditingCategory(null);
+                      }}
+                      className="rounded-md border border-border px-4 py-2 text-xs uppercase tracking-wider hover:bg-card"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="rounded-md bg-primary px-5 py-2 text-xs uppercase tracking-wider text-primary-foreground hover:opacity-90"
+                    >
+                      Save Category
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {categories.map((c) => (
+                  <div
+                    key={c.id}
+                    className="card-star rounded-xl border border-border p-5 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-xs text-gold">#{c.sort_order}</span>
+                        <span className="font-mono text-xs text-muted-foreground">{c.slug}</span>
+                      </div>
+                      <h3 className="mt-2 text-lg font-medium text-foreground">{c.name}</h3>
+                      {c.name_ar && (
+                        <p className="text-sm text-gold font-serif mt-0.5">{c.name_ar}</p>
+                      )}
+                      {c.description && (
+                        <p className="mt-2 text-xs text-muted-foreground line-clamp-2">
+                          {c.description}
                         </p>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        {r.phone && (
-                          <a
-                            href={waUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20"
-                          >
-                            <MessageCircle className="h-3.5 w-3.5" />
-                            <span>Chat on WhatsApp</span>
-                          </a>
-                        )}
-
-                        <select
-                          value={r.status}
-                          onChange={(e) => updateCustomOrderStatus(r.id, e.target.value)}
-                          className="rounded-lg border border-input bg-background px-2.5 py-1 text-xs text-foreground outline-none focus:border-gold"
-                        >
-                          <option value="pending">Pending</option>
-                          <option value="in_progress">In Progress</option>
-                          <option value="completed">Completed</option>
-                          <option value="declined">Declined</option>
-                        </select>
-                      </div>
+                      )}
                     </div>
 
-                    <div className="mt-4 rounded-lg bg-background/50 p-4 text-sm text-foreground">
-                      <p className="font-medium text-xs uppercase tracking-wider text-gold mb-1">
-                        Brief & Description:
-                      </p>
-                      <p className="whitespace-pre-wrap leading-relaxed">{r.description}</p>
+                    <div className="mt-4 flex items-center justify-end gap-2 border-t border-border/60 pt-3">
+                      <button
+                        type="button"
+                        onClick={() => startEditCategory(c)}
+                        className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs hover:border-gold hover:text-gold"
+                      >
+                        <Edit2 className="h-3 w-3" />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => deleteCategory(c.id)}
+                        className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs text-rose-400 hover:border-rose-400"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        <span>Delete</span>
+                      </button>
                     </div>
-
-                    {(r.preferred_style ||
-                      r.preferred_colors ||
-                      r.budget ||
-                      r.deadline ||
-                      r.reference_url) && (
-                      <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
-                        {r.preferred_style && <span>🎨 Style: {r.preferred_style}</span>}
-                        {r.preferred_colors && <span>🖌 Colors: {r.preferred_colors}</span>}
-                        {r.budget && <span>💰 Budget: {r.budget}</span>}
-                        {r.deadline && <span>📅 Deadline: {r.deadline}</span>}
-                        {r.reference_url && (
-                          <a
-                            href={r.reference_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-gold underline"
-                          >
-                            🔗 Inspiration Link
-                          </a>
-                        )}
-                      </div>
-                    )}
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* Tab 3: Category Management */}
-      {currentTab === "categories" && (
-        <section className="py-2">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="font-display text-2xl">Store Categories ({categories.length})</h2>
-              <p className="text-xs text-muted-foreground mt-1">
-                Add, rename, reorder, or archive storefront categories without writing code.
-              </p>
-            </div>
-            {!isCreatingCategory && !editingCategory && (
-              <button
-                type="button"
-                onClick={startCreateCategory}
-                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs uppercase tracking-[0.16em] text-primary-foreground hover:opacity-90"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                <span>Add Category</span>
-              </button>
-            )}
-          </div>
-
-          {(isCreatingCategory || editingCategory) && (
-            <form
-              onSubmit={saveCategory}
-              className="mt-6 card-star space-y-4 rounded-xl border border-gold/40 p-6"
-            >
-              <h3 className="font-display text-xl text-gold">
-                {editingCategory ? "Edit Category" : "New Category"}
-              </h3>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="text-xs uppercase tracking-wider text-muted-foreground">
-                    Name (English) *
-                  </label>
-                  <input
-                    value={catNameEn}
-                    onChange={(e) => setCatNameEn(e.target.value)}
-                    required
-                    placeholder="e.g. Wedding Stationery"
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-gold"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs uppercase tracking-wider text-muted-foreground">
-                    Name (Arabic)
-                  </label>
-                  <input
-                    value={catNameAr}
-                    onChange={(e) => setCatNameAr(e.target.value)}
-                    placeholder="مثال: دعوات وأدوات الزفاف"
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-gold"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs uppercase tracking-wider text-muted-foreground">
-                    URL Slug *
-                  </label>
-                  <input
-                    value={catSlug}
-                    onChange={(e) => setCatSlug(e.target.value)}
-                    required
-                    placeholder="e.g. wedding-stationery"
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-gold"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs uppercase tracking-wider text-muted-foreground">
-                    Sort Order
-                  </label>
-                  <input
-                    type="number"
-                    value={catOrder}
-                    onChange={(e) => setCatOrder(Number(e.target.value))}
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-gold"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs uppercase tracking-wider text-muted-foreground">
-                    Description (English)
-                  </label>
-                  <textarea
-                    value={catDescEn}
-                    onChange={(e) => setCatDescEn(e.target.value)}
-                    rows={2}
-                    placeholder="Short description for storefront filter"
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-gold"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs uppercase tracking-wider text-muted-foreground">
-                    Description (Arabic)
-                  </label>
-                  <textarea
-                    value={catDescAr}
-                    onChange={(e) => setCatDescAr(e.target.value)}
-                    rows={2}
-                    placeholder="وصف مختصر للقسم يظهر بالمتجر"
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-gold"
-                  />
-                </div>
+                ))}
               </div>
-
-              <div className="flex gap-2 justify-end pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsCreatingCategory(false);
-                    setEditingCategory(null);
-                  }}
-                  className="rounded-md border border-border px-4 py-2 text-xs uppercase tracking-wider hover:bg-card"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="rounded-md bg-primary px-5 py-2 text-xs uppercase tracking-wider text-primary-foreground hover:opacity-90"
-                >
-                  Save Category
-                </button>
-              </div>
-            </form>
+            </section>
           )}
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {categories.map((c) => (
-              <div
-                key={c.id}
-                className="card-star rounded-xl border border-border p-5 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs text-gold">#{c.sort_order}</span>
-                    <span className="font-mono text-xs text-muted-foreground">{c.slug}</span>
-                  </div>
-                  <h3 className="mt-2 text-lg font-medium text-foreground">{c.name}</h3>
-                  {c.name_ar && <p className="text-sm text-gold font-serif mt-0.5">{c.name_ar}</p>}
-                  {c.description && (
-                    <p className="mt-2 text-xs text-muted-foreground line-clamp-2">
-                      {c.description}
-                    </p>
-                  )}
-                </div>
-
-                <div className="mt-4 flex items-center justify-end gap-2 border-t border-border/60 pt-3">
-                  <button
-                    type="button"
-                    onClick={() => startEditCategory(c)}
-                    className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs hover:border-gold hover:text-gold"
-                  >
-                    <Edit2 className="h-3 w-3" />
-                    <span>Edit</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => deleteCategory(c.id)}
-                    className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs text-rose-400 hover:border-rose-400"
-                  >
-                    <Trash2 className="h-3 w-3" />
-                    <span>Delete</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {currentTab === "products" && <ProductsPanel />}
-      {currentTab === "messages" && <MessagesPanel />}
+          {currentTab === "products" && <ProductsPanel />}
+          {currentTab === "messages" && <MessagesPanel />}
         </div>
       </div>
     </div>
@@ -1154,7 +1168,11 @@ function ProductsPanel() {
           />
           <div className="flex flex-wrap items-center gap-3">
             {newImage && (
-              <img src={newImage} alt="" className="h-16 w-16 rounded-lg border border-border object-cover" />
+              <img
+                src={newImage}
+                alt=""
+                className="h-16 w-16 rounded-lg border border-border object-cover"
+              />
             )}
             <label className="cursor-pointer rounded-full border border-border px-3.5 py-1.5 text-xs hover:border-gold">
               {newImage ? "Change image" : "Upload image"}
@@ -1275,9 +1293,7 @@ function MessagesPanel() {
     <section className="py-2">
       <h2 className="font-display text-2xl">Messages ({messages.length})</h2>
       <div className="mt-6 space-y-3">
-        {messages.length === 0 && (
-          <p className="text-sm text-muted-foreground">No messages yet.</p>
-        )}
+        {messages.length === 0 && <p className="text-sm text-muted-foreground">No messages yet.</p>}
         {messages.map((m) => (
           <div key={m.id} className="card-star rounded-xl p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">

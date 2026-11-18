@@ -37,7 +37,7 @@ const clampPrice = (p: number) => (Number.isFinite(p) ? Math.min(100000, Math.ma
 export async function priceOrder(input: {
   items: ClientItem[];
   governorate: string;
-  couponCode?: string | null;
+  couponCode?: string | null | undefined;
 }): Promise<PricedOrder> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 

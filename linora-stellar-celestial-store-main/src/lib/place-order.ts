@@ -6,8 +6,7 @@ import { getGovernorate, requiresPhysicalShipping } from "./egypt-shipping";
 import { placeOrder, type PlaceOrderInput } from "./orders.functions";
 
 export type SubmitOrderResult =
-  | { ok: true; orderNumber: string; paymentUrl?: string }
-  | { ok: false; code: string };
+  { ok: true; orderNumber: string; paymentUrl?: string } | { ok: false; code: string };
 
 /**
  * Single entry point for every checkout in the app (full checkout and the one-page express
@@ -73,14 +72,8 @@ export function orderErrorMessage(code: string, isAr: boolean): string {
       "That payment method isn't available. Please choose another.",
       "وسيلة الدفع هذه غير متاحة. يرجى اختيار وسيلة أخرى.",
     ],
-    reference_required: [
-      "Please enter your transfer reference.",
-      "يرجى إدخال رقم عملية التحويل.",
-    ],
-    governorate_required: [
-      "Please select your governorate.",
-      "يرجى اختيار المحافظة.",
-    ],
+    reference_required: ["Please enter your transfer reference.", "يرجى إدخال رقم عملية التحويل."],
+    governorate_required: ["Please select your governorate.", "يرجى اختيار المحافظة."],
     card_unavailable: [
       "Card payment isn't available yet. Please use Vodafone Cash, InstaPay or Cash on Delivery.",
       "الدفع بالبطاقة غير متاح حالياً. يرجى استخدام فودافون كاش أو إنستاباي أو الدفع عند الاستلام.",

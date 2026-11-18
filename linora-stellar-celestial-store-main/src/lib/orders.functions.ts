@@ -70,7 +70,8 @@ export const placeOrder = createServerFn({ method: "POST" })
         .select("code, is_active")
         .eq("code", data.paymentMethod)
         .maybeSingle();
-      if (!method || method.is_active === false) return { ok: false, code: "invalid_payment_method" };
+      if (!method || method.is_active === false)
+        return { ok: false, code: "invalid_payment_method" };
 
       const needsRef = data.paymentMethod === "vodafone_cash" || data.paymentMethod === "instapay";
       if (needsRef && !data.paymentReference) return { ok: false, code: "reference_required" };

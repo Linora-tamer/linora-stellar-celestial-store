@@ -312,7 +312,7 @@ function TrackPage() {
               <div className="card-star rounded-2xl border border-border/80 p-6 sm:p-8">
                 <h2 className="font-display text-2xl mb-8 flex items-center gap-2">
                   <Clock className="h-5 w-5 text-gold" />
-                  <span>{t("track.timeline")}</span>
+                  <span>{isAr ? "مراحل تجهيز وشحن طلبك" : "Order Progress Timeline"}</span>
                 </h2>
 
                 <div className="relative">

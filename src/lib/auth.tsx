@@ -14,14 +14,12 @@ export function useAuth() {
       setSession(data.session);
       setLoading(false);
     });
-    const { data: sub } = supabase.auth.onAuthStateChange(
-      (event: string, next: Session | null) => {
-        setSession(next);
-        if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
-          queryClient.invalidateQueries({ queryKey: ["role"] });
-        }
-      },
-    );
+    const { data: sub } = supabase.auth.onAuthStateChange((event: string, next: Session | null) => {
+      setSession(next);
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
+        queryClient.invalidateQueries({ queryKey: ["role"] });
+      }
+    });
     return () => sub.subscription.unsubscribe();
   }, [queryClient]);
 

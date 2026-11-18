@@ -11,7 +11,8 @@ const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/av
  * Throws an Error with a user-readable message on invalid files or upload failure.
  */
 export async function uploadProductImage(file: File): Promise<string> {
-  if (!ALLOWED.includes(file.type)) throw new Error("Please choose a JPG, PNG, WebP, GIF or AVIF image.");
+  if (!ALLOWED.includes(file.type))
+    throw new Error("Please choose a JPG, PNG, WebP, GIF or AVIF image.");
   if (file.size > MAX_IMAGE_BYTES) throw new Error("Image is too large (max 5 MB).");
 
   if (!hasBackend) {

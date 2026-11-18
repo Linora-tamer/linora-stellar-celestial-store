@@ -272,56 +272,56 @@ Instagram: @linora.stellar
 
         {/* 1-Click WhatsApp Confirmation Action Box (manual payments only) */}
         {!isCard && (
-        <div className="mt-8 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-5 sm:p-6 text-start max-w-2xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
-                <MessageCircle className="h-5 w-5" />
-                <span>
+          <div className="mt-8 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-5 sm:p-6 text-start max-w-2xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
+                  <MessageCircle className="h-5 w-5" />
+                  <span>
+                    {isAr
+                      ? "تأكيد فوري عبر واتساب وإرسال لقطة الشاشة"
+                      : "1-Click WhatsApp Verification & Screenshot"}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
                   {isAr
-                    ? "تأكيد فوري عبر واتساب وإرسال لقطة الشاشة"
-                    : "1-Click WhatsApp Verification & Screenshot"}
-                </span>
+                    ? "أرسلي تفاصيل طلبك وإيصال تحويل فودافون كاش أو إنستاباي بنقرة واحدة لتأكيد التجهيز فوراً."
+                    : "Send your receipt and payment transfer screenshot with 1-click for instant queue processing."}
+                </p>
               </div>
-              <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-                {isAr
-                  ? "أرسلي تفاصيل طلبك وإيصال تحويل فودافون كاش أو إنستاباي بنقرة واحدة لتأكيد التجهيز فوراً."
-                  : "Send your receipt and payment transfer screenshot with 1-click for instant queue processing."}
-              </p>
-            </div>
 
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={handleCopySummary}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium text-foreground hover:border-gold transition-colors"
-                title="Copy order text"
-              >
-                {copiedSummary ? (
-                  <>
-                    <Check className="h-3.5 w-3.5 text-emerald-400" />
-                    <span>{isAr ? "تم النسخ" : "Copied"}</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-3.5 w-3.5" />
-                    <span>{isAr ? "نسخ الملخص" : "Copy Details"}</span>
-                  </>
-                )}
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={handleCopySummary}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium text-foreground hover:border-gold transition-colors"
+                  title="Copy order text"
+                >
+                  {copiedSummary ? (
+                    <>
+                      <Check className="h-3.5 w-3.5 text-emerald-400" />
+                      <span>{isAr ? "تم النسخ" : "Copied"}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3.5 w-3.5" />
+                      <span>{isAr ? "نسخ الملخص" : "Copy Details"}</span>
+                    </>
+                  )}
+                </button>
 
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-white shadow-md hover:bg-emerald-500 transition-colors"
-              >
-                <MessageCircle className="h-4 w-4" />
-                <span>{isAr ? "واتساب الآن" : "Send on WhatsApp"}</span>
-              </a>
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-white shadow-md hover:bg-emerald-500 transition-colors"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  <span>{isAr ? "واتساب الآن" : "Send on WhatsApp"}</span>
+                </a>
+              </div>
             </div>
           </div>
-        </div>
         )}
       </div>
 
